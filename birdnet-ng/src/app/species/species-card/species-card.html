@@ -1,0 +1,29 @@
+<div class="bird-grid-card" (click)="goToBirdDetail()">
+  <div class="card-content">
+    <div class="card-header">
+      <h3 class="bird-common-name">{{ bird.Com_Name }}</h3>
+      <p class="bird-sci-name"><em>{{ bird.Sci_Name }}</em></p>
+    </div>
+    
+    <div class="card-details">
+      @if (bird.rarity) {
+      <div class="detail-item">
+        <span class="detail-label">Rarity:</span>
+        <span class="detail-value rarity-{{ bird.rarity | spaceToUnderscore }}">{{ bird.rarity }}</span>
+      </div>
+      }
+      <div class="detail-item">
+        <span class="detail-label">Daily:</span>
+        <span class="detail-value">{{ bird.percentDaily | number:'1.0-0' }}%</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Detections:</span>
+        <span class="detail-value">{{ bird.numberDetections }}</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card-image-container">
+    <img [src]="bird.imageUrl" [alt]="bird.Com_Name" class="bird-image" />
+  </div>
+</div>

@@ -1,0 +1,21 @@
+<div class="last-bird">
+@if (lastBird) {
+@if (lastBird.Com_Name) {
+    <h3>New Bird!</h3>
+    <app-detection-detail [detection]=lastBird [bird]="birds[lastBird.Sci_Name]"></app-detection-detail>
+}
+<br />
+}
+</div>
+
+@if (latestBirds) {
+@if (latestBirds.length) {
+<div>
+    <h3>Recent Birds</h3>
+    @for (detect of latestBirds; track detect.Time) {
+        @if (birds && birds[detect.Sci_Name]) {
+        <app-detection-detail [detection]=detect [bird]="birds[detect.Sci_Name]"></app-detection-detail>
+    }   }
+</div>
+}
+}

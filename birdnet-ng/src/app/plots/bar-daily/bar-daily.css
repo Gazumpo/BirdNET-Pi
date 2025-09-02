@@ -1,0 +1,9 @@
+  .plot-canvas {
+    display: flex;
+    width: 100%;
+
+    background-color: white;
+    height: 30%; /* Make the plot canvas fill the available height */
+    margin: 2px;
+
+  }

@@ -1,0 +1,21 @@
+<div class="date-picker-container">
+  <div class="date-picker-navigation">
+    <button (click)="previousWeek()" class="nav-button prev-button">
+      <span class="arrow">&lt;</span>
+    </button>
+    <form #dateForm="ngForm">
+      <input type="date"
+             id="simple-date"
+             class="date-input"
+             [(ngModel)]="date"
+             (ngModelChange)="onDateChange()"
+             name="date">
+    </form>
+    <button (click)="nextWeek()" class="nav-button next-button">
+      <span class="arrow">&gt;</span>
+    </button>
+    <button (click)="today()" class="today-button">Today</button>
+  </div>
+</div>
+
+<app-weekly-stats [date]=date/>

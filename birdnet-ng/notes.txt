@@ -1,0 +1,19 @@
+ng build --configuration=production
+scp -r /Users/graeme/Projects/BirdNET-Pi/birdnet-ng/dist/birdnet-ng/* graeme@birdnet.local:/home/graeme/BirdNET-Pi/birdnet-ng/
+
+
+/home/graeme/BirdNET-Pi/birdnet-ng;
+
+sudo nginx -t
+sudo systemctl reload nginx
+
+sudo nano /etc/nginx/sites-available/angular-app.conf
+
+
+pm2 reload server.js
+pm2 save
+
+
+
+node server.js
+pm2 start your_main_script.js

@@ -1,0 +1,10 @@
+{
+  "/api": {
+    "target": "https://www.transperth.wa.gov.au",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  }
+}

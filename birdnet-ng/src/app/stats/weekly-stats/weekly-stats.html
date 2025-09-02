@@ -1,0 +1,48 @@
+<div class="date-container">
+  <p>Week {{ date1 | date:'longDate'}} to {{ date2 | date:'longDate'}} </p>
+</div>
+<div class="grid-container">
+  <div class="grid-item">
+    <h2>Detections</h2>
+    @if (stats) {
+    <p class="stat-number">{{ stats.numberDetections }}</p>
+    }
+  </div>
+  <div class="grid-item">
+    <h2>Species</h2>
+    @if (stats) {
+    <p class="stat-number">{{ stats.numberSpecies }}</p>
+    }
+  </div>
+  <div class="grid-item">
+    <h2>Rare Species</h2>
+    @if (stats) {
+        @if (stats.rareSpecies?.length > 0) {
+            @for (bird of stats.rareSpecies; track bird.Sci_Name) {
+              <div class="bird-item" (click)="goToBirdDetail(bird.Sci_Name)">
+                  <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
+                  <p class="bird-name">{{ bird.Com_Name }}</p>
+              </div>
+            }
+        } @else {
+            <p class="stat-number">0</p>
+        }
+    }
+  </div>
+  <div class="grid-item">
+    <h2>Very Rare Species</h2>
+    @if (stats) {
+        @if (stats.veryRareSpecies?.length > 0) {
+            @for (bird of stats.veryRareSpecies; track bird.Sci_Name) {
+              <div class="bird-item" (click)="goToBirdDetail(bird.Sci_Name)">
+                  <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
+                  <p class="bird-name">{{ bird.Com_Name }}</p>
+              </div>
+            }
+        } @else {
+            <p class="stat-number">0</p>
+        }
+    }
+  </div>
+</div>
+

@@ -1,0 +1,100 @@
+.date-container {
+  text-align: center;
+}
+
+/* Styling for the main container that holds the grid items */
+.grid-container {
+  display: grid; /* Enables CSS Grid layout */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Creates responsive columns */
+  gap: 10px; /* Space between grid items */
+  padding: 10px; /* Padding around the entire grid */
+  background-color: #f0f0f0; /* Light background for the container */
+  border-radius: 8px; /* Rounded corners for the container */
+  max-width: 900px; /* Limits the maximum width of the grid */
+  margin: 20px auto; /* Centers the grid container horizontally */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Styling for each individual item within the grid */
+.grid-item {
+  background-color: #ffffff; /* White background for each item */
+  padding: 5px; /* Padding inside each item */
+  border-radius: 8px; /* Rounded corners for each item */
+  text-align: center; /* Centers text within each item */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Lighter shadow for items */
+  display: flex; /* Use flexbox for vertical alignment */
+  flex-direction: column; /* Stack children vertically */
+  justify-content: center; /* Center content vertically */
+  align-items: center; /* Center content horizontally */
+}
+
+/* Styling for the headings within each grid item */
+.grid-item h2 {
+  font-size: 1.2em; /* Slightly larger font for headings */
+  color: #333333; /* Darker color for headings */
+  margin-bottom: 8px; /* Space below the heading */
+  margin-top: 8px;
+  font-weight: bold; /* Make headings bold */
+}
+
+/* Styling for the paragraph text (values) within each grid item */
+.stat-number {
+  font-size: 1.8em; /* Larger font for values */
+  color: #007bff; /* Blue color for values to make them stand out */
+  margin: 0; /* Remove default margin */
+  font-weight: 600; /* Semi-bold for values */
+}
+
+/* Basic body styling for better presentation */
+body {
+  font-family: 'Inter', sans-serif; /* Use Inter font or a generic sans-serif */
+  background-color: #e9ecef; /* Light grey background for the page */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Ensure body takes full viewport height */
+}
+
+/* New and updated styles for bird lists */
+.bird-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align items to the start for left-aligned list */
+  width: 100%; /* Take full width of parent */
+  padding: 0 5px; /* Add some horizontal padding */
+  box-sizing: border-box; /* Include padding in element's total width */
+}
+
+
+.bird-item {
+  display: flex; /* Use flexbox for image and name on same line */
+  align-items: center; /* Vertically align image and text */
+  margin-bottom: 2px; /* Space between bird items */
+  cursor: pointer; /* Indicate it's clickable */
+  padding: 3px 5px; /* Padding for click area */
+  border-radius: 4px; /* Slightly rounded corners */
+  transition: background-color 0.2s ease; /* Smooth hover effect */
+  width: 100%; /* Ensure full width for hover effect */
+}
+
+.bird-item:hover {
+  background-color: #e2f0ff; /* Light blue background on hover */
+}
+
+.bird-mark {
+  height: 24px; /* Slightly larger bird image */
+  width: 24px; /* Maintain aspect ratio */
+  margin-right: 8px; /* Space between image and name */
+  object-fit: contain; /* Ensure image fits within bounds without cropping */
+}
+
+.bird-name {
+  font-size: 1.0em; /* Font size for bird name */
+  color: #007bff; /* Darker color for bird name */
+  margin: 0; /* Remove default margin */
+  font-weight: bold; /* Normal weight for bird name */
+  text-align: left; /* Align bird name text to the left */
+}
+

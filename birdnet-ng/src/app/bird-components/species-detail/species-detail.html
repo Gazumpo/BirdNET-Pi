@@ -1,0 +1,73 @@
+<div class="bird-detail-container">
+  @if (bird) {
+    <header class="bird-header">
+      <h1 class="bird-common-name">{{ bird.Com_Name }}</h1>
+      <p class="bird-sci-name"><em>{{ bird.Sci_Name }}</em></p>
+    </header>
+
+    <div class="bird-main-content">
+      <div class="image-and-audio-section">
+        <div class="bird-image-container">
+          <img [src]="bird.imageUrl" [alt]="bird.Com_Name" class="bird-image" />
+        </div>
+        
+        <div class="audio-detections">
+          <h4>Detections</h4>
+          <hr />
+          @if (latest) {
+            @if (latest.length > 0) {
+              <div class="detection-item">
+                <span class="detection-label">Latest:</span>
+                <span class="detection-info">
+                  {{ latest[0].Date | date:'longDate'}} {{ latest[0].Time }} (Confidence: {{latest[0].Confidence | percent: '1.0-0'}})
+                </span>
+                <audio controls [src]="latest[0].birdsongUrl" class="audio-player"></audio>
+              </div>
+            }
+            @if (latest.length > 1) {
+              <div class="detection-item">
+                <span class="detection-info">
+                  {{ latest[1].Date | date:'longDate' }} {{ latest[1].Time }} (Confidence: {{latest[1].Confidence | percent: '1.0-0'}})
+                </span>
+                <audio controls [src]="latest[1].birdsongUrl" class="audio-player"></audio>
+              </div>
+            }
+          }
+          
+          @if (best) {
+            <hr />
+            <div class="detection-item">
+              <span class="detection-label">Best:</span>
+              <span class="detection-info">
+                {{ best.Date | date:'longDate' }} (Confidence: {{best.Confidence | percent: '1.0-0'}})
+              </span>
+              <audio controls [src]="best.birdsongUrl" class="audio-player"></audio>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="bird-stats-section">
+        <h3 class="section-title">Bird Statistics</h3>
+        <ul class="stats-list">
+          <li><strong>Detections:</strong> {{ bird.numberDetections }}</li>
+          <li><strong>Days Detected:</strong> {{ bird.numberDaysDetection }}</li>
+          <li><strong>Daily Chance:</strong> {{ bird.percentDaily | number:'1.2-2' }}%</li>
+          <li><strong>Total Detections:</strong> {{ bird.percentTotal | number:'1.2-2' }}%</li>
+        </ul>
+      </div>
+
+      <app-bar-species [detectionDatesCount]=bird.detectionDatesCount/>
+
+      <div class="bird-description-section">
+        <h3 class="section-title">About This Bird</h3>
+        @if (wikiUrl) {
+          <a [href]="wikiUrl" target="_blank" class="wiki-link">Read more on Wikipedia</a>
+        }
+        @if (birdDescription) {
+          <div class="wiki-content" [innerHTML]="birdDescription | wikipediaText"></div>
+        }
+      </div>
+    </div>
+  }
+</div>

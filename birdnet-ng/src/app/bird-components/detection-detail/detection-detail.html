@@ -1,0 +1,28 @@
+@if (detection) {
+<div class="bird-card-horizontal" (click)="goToBirdDetail()">
+    <div class="card-image-container-horizontal">
+        <img [src]="detection.imageUrl" [alt]="detection.Com_Name" class="bird-image">
+    </div>
+    <div class="card-content-horizontal">
+        <div class="card-info-grid">
+            <h3 class="bird-name">{{ detection.Com_Name }}</h3>
+            <span class="detection-time">{{ detection.Time }}</span>
+        </div>
+        
+        <div class="card-info-grid">
+            <div class="info-item">
+                <span class="info-label">Confidence:</span>
+                <span class="info-value">{{ detection.Confidence | percent: '1.0-0' }}</span>
+            </div>
+            @if (bird.rarity) {
+            <div class="info-item">
+                <span class="info-label">Rarity:</span>
+                <span class="info-value rarity-{{ bird.rarity | spaceToUnderscore }}">{{bird.rarity}}</span>
+            </div>
+            }
+        </div>
+        
+        <audio controls [src]="detection.birdsongUrl" class="birdsong-audio" (click)="stopPropagation($event)"></audio>
+    </div>
+</div>
+}

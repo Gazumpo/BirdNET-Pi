@@ -1,0 +1,81 @@
+.date-picker-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  padding: 10px;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 350px;
+  margin: auto;
+}
+
+.date-picker-navigation {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Adds space between items */
+  width: 100%;
+  display: flex;
+  justify-content: center; /* This centers the items horizontally */
+  align-items: center; /* This centers the items vertically */
+}
+
+.nav-button {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  padding: 0;
+}
+
+.nav-button:hover {
+  background-color: #e9e9e9;
+  transform: scale(1.05);
+}
+
+.arrow {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.date-input {
+  flex-grow: 1; /* Makes the input take up the remaining space */
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #555;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  text-align: right;
+  min-width: 150px;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.today-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.today-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}

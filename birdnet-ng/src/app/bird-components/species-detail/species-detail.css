@@ -1,0 +1,143 @@
+.bird-detail-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Poppins', sans-serif;
+  color: #34495e;
+}
+
+.bird-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.bird-common-name {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.bird-sci-name {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  margin: 0.5rem 0;
+}
+
+.bird-main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two-column layout */
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .bird-main-content {
+    grid-template-columns: 1fr; /* Single column on smaller screens */
+  }
+}
+
+.image-and-audio-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bird-image-container {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.bird-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.audio-detections {
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+}
+
+.audio-detections h4 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  color: #34495e;
+}
+
+.audio-detections hr {
+  border: 0;
+  border-top: 1px solid #e0e0e0;
+  margin: 1rem 0;
+}
+
+.detection-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.detection-label {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.detection-info {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.audio-player {
+  width: 100%;
+}
+
+.bird-stats-section, .bird-description-section {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.stats-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.stats-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.stats-list li:last-child {
+  border-bottom: none;
+}
+
+.wiki-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease-in-out;
+}
+
+.wiki-link:hover {
+  color: #2980b9;
+}
+
+.wiki-content {
+  line-height: 1.6;
+  color: #555;
+}

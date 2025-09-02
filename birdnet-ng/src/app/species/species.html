@@ -1,0 +1,27 @@
+
+<div class="button-row">
+  <button (click)="sortBirds('Com_Name')" [class.active]="currentSorting === 'Com_Name'">
+    Name
+    @if (currentSorting === 'Com_Name') {
+      <span [class.arrow-up]="sortDirection === 'asc'" [class.arrow-down]="sortDirection === 'desc'"></span>
+    }
+  </button>
+  <button (click)="sortBirds('rarity')" [class.active]="currentSorting === 'rarity'">
+    Rarity
+    @if (currentSorting === 'rarity') {
+      <span [class.arrow-up]="sortDirection === 'asc'" [class.arrow-down]="sortDirection === 'desc'"></span>
+    }
+  </button>
+  <button (click)="sortBirds('numberDetections')" [class.active]="currentSorting === 'numberDetections'">
+    Detections
+    @if (currentSorting === 'numberDetections') {
+      <span [class.arrow-up]="sortDirection === 'asc'" [class.arrow-down]="sortDirection === 'desc'"></span>
+    }
+  </button>
+</div>
+
+<div class="grid">
+  @for (bird of birds; track bird.Sci_Name) {
+    <app-species-card [bird]=bird></app-species-card>
+  }
+</div>

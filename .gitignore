@@ -24,6 +24,10 @@
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
+.venv/
+
+**/node_modules/
+
 *.pyc
 *.flac
 .vscode
@@ -46,3 +50,5 @@ HUMAN.txt
 include_species_list.txt
 whitelist_species_list.txt
 /nbproject/private/
+
+.DS_Store

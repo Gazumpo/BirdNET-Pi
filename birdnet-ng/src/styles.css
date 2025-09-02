@@ -1,0 +1,13 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+    margin: 0
+}
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+.rarity-very-common { color: #27ae60; } /* Green for common */
+.rarity-common { color: #3498db; } /* Blue for uncommon */
+.rarity-rare { color: #f1c40f; } /* Yellow for rare */
+.rarity-very-rare { color: #e74c3c; } /* Red for endangered */
+

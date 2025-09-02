@@ -1,0 +1,11 @@
+<p>Mins Until Next Trains to Perth:
+@for (time of nextTrains('Perth'); track $index) {
+{{time}}, 
+}
+</p>
+<p>Mins Until Next Trains to Freo:
+@for (time of nextTrains('Fremantle'); track $index) {
+{{time}}, 
+}
+</p>
+<button (click)="loadTrains()">Refresh</button>

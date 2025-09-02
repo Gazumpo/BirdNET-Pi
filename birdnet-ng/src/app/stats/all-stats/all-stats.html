@@ -1,0 +1,23 @@
+
+<div class="grid-container">
+  <div class="grid-item">
+    <h2>Detections</h2>
+    @if (stats) {
+    <p class="stat-number">{{ stats.numberDetections }}</p>
+    }
+  </div>
+  <div class="grid-item">
+    <h2>Species</h2>
+    @if (stats) {
+    <p class="stat-number" (click)="showSpecies()">{{ stats.numberSpecies }}</p>
+    }
+  </div>
+  <div class="grid-item">
+    <h2>Days Running</h2>
+    @if (stats) {
+    <p class="stat-number">{{ stats.numberDays }}</p>
+    }
+  </div>
+
+</div>
+
