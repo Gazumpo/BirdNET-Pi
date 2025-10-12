@@ -1,8 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 body {
-    margin: 0
-}
-body {
+  margin: 0;
   font-family: 'Poppins', sans-serif;
 }
 
@@ -11,3 +9,7 @@ body {
 .rarity-rare { color: #f1c40f; } /* Yellow for rare */
 .rarity-very-rare { color: #e74c3c; } /* Red for endangered */
 
+html, body {
+  margin: 0;
+  background-color: transparent;
+}

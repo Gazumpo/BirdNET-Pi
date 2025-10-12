@@ -5,7 +5,7 @@
 /* Styling for the main container that holds the grid items */
 .grid-container {
   display: grid; /* Enables CSS Grid layout */
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Creates responsive columns */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Creates responsive columns */
   gap: 10px; /* Space between grid items */
   padding: 10px; /* Padding around the entire grid */
   background-color: #f0f0f0; /* Light background for the container */

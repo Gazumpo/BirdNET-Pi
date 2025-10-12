@@ -15,6 +15,8 @@ import { SpaceToUnderscorePipe } from '../../pipes/space-to-underscore-pipe';
 export class DetectionDetail {
   @Input() detection!: BirdDetection;
   @Input() bird!: BirdSpecies;
+  @Input() isNew: boolean = false;
+  @Input() timeType: string = '';
 
   constructor(
     private router: Router

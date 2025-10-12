@@ -1,21 +1,39 @@
-<div class="last-bird">
-@if (lastBird) {
-@if (lastBird.Com_Name) {
+<div>
+@if (lastDetection) {
+@if (lastDetection.Com_Name) {
     <h3>New Bird!</h3>
-    <app-detection-detail [detection]=lastBird [bird]="birds[lastBird.Sci_Name]"></app-detection-detail>
+    <app-detection-detail [detection]=lastDetection [bird]="birds[lastDetection.Sci_Name]" [isNew]="true"></app-detection-detail>
 }
 <br />
 }
 </div>
 
-@if (latestBirds) {
-@if (latestBirds.length) {
-<div>
-    <h3>Recent Birds</h3>
-    @for (detect of latestBirds; track detect.Time) {
-        @if (birds && birds[detect.Sci_Name]) {
-        <app-detection-detail [detection]=detect [bird]="birds[detect.Sci_Name]"></app-detection-detail>
-    }   }
+@if (filteredLatestDetections) {
+@if (filteredLatestDetections.length) {
+<div class="container">
+    <div class="header-container">
+        <h3>Recent Birds</h3>
+        <div class="controls-container">
+            <div class="dropdown-container">
+                <select class="control-dropdown" (change)="filterData($event)">
+                    <option value="all">All</option>
+                    <option value="birds" selected>Birds</option>
+                </select>
+            </div>
+            <div class="refresh-button" (click)="refreshData()">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#999"><path d="M160-160v-80h110l-16-14q-52-46-73-105t-21-119q0-111 66.5-197.5T400-790v84q-72 26-116 88.5T240-478q0 45 17 87.5t53 78.5l10 10v-98h80v240H160Zm400-10v-84q72-26 116-88.5T720-482q0-45-17-87.5T650-648l-10-10v98h-80v-240h240v80H690l16 14q49 49 71.5 106.5T800-482q0 111-66.5 197.5T560-170Z"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <cdk-virtual-scroll-viewport itemSize="100" class="detections-viewport">
+        @for (detect of filteredLatestDetections; track detect) {
+            @if (birds && birds[detect.Sci_Name]) {
+            <app-detection-detail [detection]=detect [bird]="birds[detect.Sci_Name]"></app-detection-detail>
+            }   
+        }
+    </cdk-virtual-scroll-viewport>
+    
 </div>
 }
 }

@@ -43,6 +43,7 @@ export class SpeciesDetail {
     })
   }
 
+
   getLatest(Sci_Name: string) {
     this.Data.getLatest(3, Sci_Name).subscribe(latestBirds => this.latest = latestBirds);
   }

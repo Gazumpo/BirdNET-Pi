@@ -42,6 +42,7 @@ export class DailyStats {
       stats: this.Data.getStatsDay(this.date),
       birds: this.Data.getBirds()
     }).subscribe(results => {
+      console.log(results)
       this.stats = results.stats;
       this.birds = results.birds.reduce((acc, bird) => {
         acc[bird.Sci_Name] = bird;

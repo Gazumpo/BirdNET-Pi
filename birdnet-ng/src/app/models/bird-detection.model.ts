@@ -15,6 +15,8 @@ export class BirdDetection {
 
     birdsongUrl: string;
     imageUrl?: string;
+    timeType?: string;
+    timeTypeIcon?: string;
 
     constructor(data: any) {
         this.Date = data.Date;
@@ -30,7 +32,7 @@ export class BirdDetection {
         this.Overlap = data.Overlap;
         this.File_Name = data.File_Name;
 
-        this.birdsongUrl = 'http://birdnet.local:3000/' + data.Date + '/' + data.Com_Name.replaceAll(" ", "_") + '/' + data.File_Name;
+        this.birdsongUrl = 'birdapi/' + data.Date + '/' + data.Com_Name.replaceAll(" ", "_") + '/' + data.File_Name;
         this.imageUrl = "birds/" + data.Sci_Name.replace(" ", "_") + ".jpg";
     }
 }

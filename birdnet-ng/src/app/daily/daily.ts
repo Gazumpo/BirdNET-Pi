@@ -13,6 +13,8 @@ import { DailyStats } from "../stats/daily-stats/daily-stats";
 })
 export class Daily {
   date: string = new Date().toLocaleDateString("en-CA", { timeZone: "Australia/Perth" }).slice(0, 10);
+  range: string = 'all-day'
+  selectedTime: string = '50'
 
   onDateChange(): void {
     if (this.date) {
@@ -39,5 +41,17 @@ export class Daily {
 
   today(): void {
     this.date = new Date().toLocaleDateString("en-CA", { timeZone: "Australia/Perth" }).slice(0, 10);
+  }
+
+  rangeChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.range = selectedValue;
+    console.log(selectedValue)
+  }
+
+  timeChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.selectedTime = selectedValue;
+    console.log(selectedValue)
   }
 }

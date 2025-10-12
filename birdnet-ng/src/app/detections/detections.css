@@ -1,5 +1,40 @@
 
-.last-bird {
-    border-color: 'red';
-    border-width: 3px;
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 48rem;
+}
+
+.refresh-button {
+    /* Optional: Add some basic styling to make it look like a button */
+    padding: 8px 12px;
+    cursor: pointer;
+    color: none;
+}
+
+.controls-container {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.control-dropdown {
+    /* Base styling for the dropdown */
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 1.5rem; /* Rounded pill shape */
+    background-color: #fff;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none; /* Removes default dropdown arrow */
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.detections-viewport {
+  height: 85vh; /* Or whatever height you need */
 }

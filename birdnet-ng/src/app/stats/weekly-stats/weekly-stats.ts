@@ -30,7 +30,7 @@ export class WeeklyStats {
       this._date = newDate;
       this.date1 = this.getLastMonday(newDate).toISOString().split('T')[0];
       console.log(this.date1) 
-      this.date2 = new Date(new Date(newDate).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      this.date2 = new Date(new Date(this.date1).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
       console.log(this.date2)
       this.loadWeeksStats(); // Trigger data loading when the date changes
     }
@@ -62,26 +62,25 @@ export class WeeklyStats {
   }
 
   processStats() {
-    this.stats.rareSpecies = this.stats.birds.filter((species: any) => {
+    let birdTypes: { [key: string]: string } = {
+      'veryCommonSpecies': "Very Common",
+      'commonSpecies': "Common",
+      'rareSpecies': "Rare",
+      'veryRareSpecies': "Very Rare"
+    }
+
+    for (let key in birdTypes) {
+      this.stats[key] = this.stats.birds.filter((species: any) => {
       const bird = this.birds[species.Sci_Name];
-      return bird && (bird.rarity === "Rare");
-    }).map((species: any) => {
-      const bird = this.birds[species.Sci_Name];
-      return {
-        Sci_Name: bird.Sci_Name,
-        Com_Name: bird.Com_Name,
-      };
-    });
-    this.stats.veryRareSpecies = this.stats.birds.filter((species: any) => {
-      const bird = this.birds[species.Sci_Name];
-      return bird && (bird.rarity === "Very Rare");
-    }).map((species: any) => {
-      const bird = this.birds[species.Sci_Name];
-      return {
-        Sci_Name: bird.Sci_Name,
-        Com_Name: bird.Com_Name,
-      };
-    });
+      return bird && (bird.rarity === birdTypes[key]);
+      }).map((species: any) => {
+        const bird = this.birds[species.Sci_Name];
+        return {
+          Sci_Name: bird.Sci_Name,
+          Com_Name: bird.Com_Name
+        };
+      });
+    }
   }
 
   getLastMonday(date: string) {

@@ -114,13 +114,20 @@ export class BarDaily {
         l: 50,
         t: 15,
         b: 100
+      },
+      xaxis: {
+        fixedrange: true
+      },
+      yaxis: {
+        fixedrange: true
       }
     };
 
     const config: Partial<Plotly.Config> = {
       responsive: true,
-      displayModeBar: true,
+      displayModeBar: false,
       displaylogo: false,
+      scrollZoom: false // Disables zoom with mouse wheel
     };
 
     Plotly.newPlot(this.mainPlotBar.nativeElement, this.plotData, layout, config);

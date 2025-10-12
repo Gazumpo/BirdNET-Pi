@@ -6,5 +6,19 @@
     "pathRewrite": {
       "^/api": ""
     }
+  },
+  "/birdapi": {
+    "target": "http://birdnet.local:3000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/birdapi": ""
+    }
+  },
+  "/ws-path": {
+    "target": "ws://birdnet.local:3000",
+    "secure": false,
+    "ws": true
   }
 }

@@ -2,6 +2,7 @@
   max-width: 1000px;
   margin: 0 auto;
   padding: 2rem;
+  padding-top:0px;
   font-family: 'Poppins', sans-serif;
   color: #34495e;
 }
@@ -141,3 +142,11 @@
   line-height: 1.6;
   color: #555;
 }
+
+.bird-header {
+  text-align: center;
+  /* Add flex-grow to make the header take up available space and help with centering */
+  flex-grow: 1; 
+}
+
+/* ... (keep all other existing CSS styles as they are) ... */

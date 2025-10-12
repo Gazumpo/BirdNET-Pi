@@ -15,6 +15,49 @@
     }
   </div>
   <div class="grid-item">
+    <h2>Most Common Species</h2>
+    @if (stats) {
+        @if (stats.birds.length > 0) {
+            <div class="bird-item" (click)="goToBirdDetail(stats.birds[0].Sci_Name)">
+                <img class="bird-mark" [src]="'birds/' + stats.birds[0].Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ stats.birds[0].Com_Name }}">
+                <p class="bird-name">{{ stats.birds[0].Com_Name }}</p>
+            </div>
+        } @else {
+            <p class="stat-number">0</p>
+        }
+    }
+  </div>
+  <div class="grid-item">
+    <h2>Very Common Species</h2>
+    @if (stats) {
+        @if (stats.veryCommonSpecies?.length > 0) {
+            @for (bird of stats.veryCommonSpecies; track bird.Sci_Name) {
+              <div class="bird-item" (click)="goToBirdDetail(bird.Sci_Name)">
+                  <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
+                  <p class="bird-name">{{ bird.Com_Name }}</p>
+              </div>
+            }
+        } @else {
+            <p class="stat-number">0</p>
+        }
+    }
+  </div>
+  <div class="grid-item">
+    <h2>Common Species</h2>
+    @if (stats) {
+        @if (stats.commonSpecies?.length > 0) {
+            @for (bird of stats.commonSpecies; track bird.Sci_Name) {
+              <div class="bird-item" (click)="goToBirdDetail(bird.Sci_Name)">
+                  <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
+                  <p class="bird-name">{{ bird.Com_Name }}</p>
+              </div>
+            }
+        } @else {
+            <p class="stat-number">0</p>
+        }
+    }
+  </div>
+  <div class="grid-item">
     <h2>Rare Species</h2>
     @if (stats) {
         @if (stats.rareSpecies?.length > 0) {

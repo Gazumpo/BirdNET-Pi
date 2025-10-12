@@ -5,7 +5,6 @@ import { Data } from '../../services/data';
 import { Sunrise } from '../../services/sunrise';
 import { forkJoin } from 'rxjs';
 import { Router } from '@angular/router';
-import { Observable, map } from 'rxjs';
 
 @Component({
   selector: 'app-scatter',
@@ -15,11 +14,16 @@ import { Observable, map } from 'rxjs';
 })
 export class Scatter {
   todayBirds: BirdDetection[] = [];
+  todayDate: string = new Date().toLocaleString("en-CA", { timeZone: "Australia/Perth", hour12: false }).slice(0,10);
+  todayDateTime: string = new Date().toLocaleString("en-CA", { timeZone: "Australia/Perth", hour12: false }).replace(",", "");
   plotData: Plotly.Data[] = [];
+  plotWidth: number = 0;
   images: Array<Partial<Plotly.Image>> = [];
   shapes: Array<Partial<Plotly.Shape>> = [];
+  annotations: Array<Partial<Plotly.Annotations>> = [];
   sunrise: any;
   private _date!: string;
+  private readonly MAX_IMAGE_TIME_GAP = 60 * 30;
 
   @ViewChild('mainPlotScatter', { static: true }) mainPlotScatter!: ElementRef;
 
@@ -29,7 +33,7 @@ export class Scatter {
     private router: Router
   ) {}
 
-  // Create an @Input() setter for the date property
+  // ------
   @Input()
   set date(newDate: string) {
     if (this._date !== newDate) { // Check if the date has actually changed
@@ -42,9 +46,8 @@ export class Scatter {
     return this._date;
   }
 
-  ngOnInit() {}
-
-
+  ngOnInit() {
+  }
 
   loadData() {
     forkJoin({
@@ -53,9 +56,13 @@ export class Scatter {
     }).subscribe(results => {
       this.todayBirds = results.todayBirds;
       this.sunrise = results.sunrise
+      console.log('sunrise response', this.sunrise)
+
       this.plotData = [];
       this.images = [];
       this.shapes = [];
+      this.annotations = [];
+      
       this.createPlotData();
       this.createBackground();
       this.initialisePlot();
@@ -68,36 +75,6 @@ export class Scatter {
   }
 
   setPlotEvents() {
-    // Assuming 'myDiv' is the ID of your Plotly plot container
-    // this.mainPlotScatter.nativeElement.on('plotly_hover', (data: any) => {
-    //     console.log(data)
-    //     if (data.points.length > 0){
-    //         let point = data.points[0]
-    //         let sciName = point.data.name
-    //         let imgUrl = "birds/" + sciName.replace(" ", "_") + ".jpg"
-
-    //         let image: Partial<Plotly.Image> = {
-    //             source: imgUrl,
-    //             x: 1,
-    //             y: 1,
-    //             sizex: 0.3, // Adjust size as needed
-    //             sizey: 0.3,
-    //             xanchor: "right",
-    //             yanchor: "top",
-    //             xref: "paper",
-    //             yref: "paper"
-    //         };
-
-    //         Plotly.relayout(this.mainPlotScatter.nativeElement, {
-    //             images: [image]
-    //         });
-    //       }
-    //     })
-
-    // this.mainPlotScatter.nativeElement.on('plotly_unhover', (data: any) => {
-    //     // Clear the image when unhovering
-    //     Plotly.relayout(this.mainPlotScatter.nativeElement, { images: [] });
-    // });
 
     this.mainPlotScatter.nativeElement.on('plotly_click', (data: any) => {
         const clickedPoint = data.points[0].data.name;
@@ -111,27 +88,37 @@ export class Scatter {
     const uniqueBirds = [...new Set(this.todayBirds.map(bird => bird.Com_Name))];
     console.log('Unique Birds', uniqueBirds)
 
+    this.plotWidth = this.mainPlotScatter.nativeElement.clientWidth;
+
     for (const uniqueBird of uniqueBirds) {
       const birdDetections = this.todayBirds.filter(bird => bird.Com_Name === uniqueBird);
-      let yTitle = uniqueBird+ " (" + birdDetections.length + ")"
+      let yTitle = uniqueBird+ " (" + birdDetections.length + ")";
 
       let times = [];
       let songUrls = [];
+      let lastTime = "00:00:00"
       for (const detection of birdDetections) {
         times.push(detection.Date + ' ' + detection.Time)
         songUrls.push(detection.birdsongUrl)
-        this.images.push({
-          source: "birds/" + detection.Sci_Name.replace(" ", "_") + "_mark.png",
-          xref: "x",
-          yref: "y",
-          x: detection.Date + ' ' + detection.Time,
-          y: yTitle, 
-          sizex: 1.4*60*60*1000, 
-          sizey: 8,
-          xanchor: "center",
-          yanchor: "middle"
-          //layer: "above"
-        })
+
+        let timeFromLast = this.calculateTimeDifferenceInSeconds(detection.Time, lastTime)
+        if (timeFromLast && timeFromLast > this.MAX_IMAGE_TIME_GAP) {
+          this.images.push({
+            source: "birds/" + detection.Sci_Name.replace(" ", "_") + "_mark.png",
+            xref: "x",
+            yref: "y",
+            x: detection.Date + ' ' + detection.Time,
+            y: yTitle, 
+            sizing: "contain",
+            sizex: 1.4*60*60*10000, 
+            sizey: 1.1,
+            xanchor: "center",
+            yanchor: "middle"
+            //layer: "above"
+          })
+          lastTime = detection.Time
+        }
+        
       }
       let names = Array.from({length: times.length}, () => yTitle)
 
@@ -154,18 +141,63 @@ export class Scatter {
       const xB = b.x as any[];
       return xA.length - xB.length;
     });
+
+    for (const trace of this.plotData) {
+      // y is an array of repeated category names
+      const scatterTrace = trace as Plotly.ScatterData;
+      const category = scatterTrace.y?.[0] as string;
+      this.annotations.push({
+        xref: 'paper',
+        yref: 'y',
+        x: 0, // left edge of the plot
+        y: category,
+        xanchor: 'left',
+        showarrow: false,
+        text: category,
+        font: {
+          size: 12,
+          color: 'white'
+        },
+        align: 'left'
+      });
+    }
+    console.log(this.annotations)
+  }
+
+  calculateTimeDifferenceInSeconds(time1Str: string, time2Str: string) {
+    // Helper function to convert a single time string to total seconds.
+    const toSeconds = (timeStr: string) => {
+      const parts = timeStr.split(':').map(Number);
+      // Ensure the format is valid (three numeric parts).
+      if (parts.length !== 3 || parts.some(isNaN)) {
+        return null;
+      }
+      const [hours, minutes, seconds] = parts;
+      return (hours * 3600) + (minutes * 60) + seconds;
+    };
+
+    const totalSeconds1 = toSeconds(time1Str);
+    const totalSeconds2 = toSeconds(time2Str);
+
+    // Return null if either time string was invalid.
+    if (totalSeconds1 === null || totalSeconds2 === null) {
+      return null;
+    }
+
+    // Calculate and return the absolute difference.
+    return Math.abs(totalSeconds1 - totalSeconds2);
   }
 
   createBackground() {
-    let twiStart = new Date('1970/01/01 ' + this.sunrise.results.astronomical_twilight_begin).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    let nautStart = new Date('1970/01/01 ' + this.sunrise.results.nautical_twilight_begin).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    let civilStart = new Date('1970/01/01 ' + this.sunrise.results.civil_twilight_begin).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    let sunrise = new Date('1970/01/01 ' + this.sunrise.results.sunrise).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    let twiStart = this.sunrise.results.astronomical_twilight_begin;
+    let nautStart = this.sunrise.results.nautical_twilight_begin;
+    let civilStart = this.sunrise.results.civil_twilight_begin;
+    let sunrise = this.sunrise.results.sunrise;
     
-    let sunset = new Date('1970/01/01 ' + this.sunrise.results.sunset).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    let civilEnd= new Date('1970/01/01 ' + this.sunrise.results.civil_twilight_end).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    let nautEnd = new Date('1970/01/01 ' + this.sunrise.results.nautical_twilight_end).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    let twiEnd = new Date('1970/01/01 ' + this.sunrise.results.astronomical_twilight_end).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    let sunset = this.sunrise.results.sunset;
+    let civilEnd= this.sunrise.results.civil_twilight_end;
+    let nautEnd = this.sunrise.results.nautical_twilight_end;
+    let twiEnd = this.sunrise.results.astronomical_twilight_end;
 
     let dayShades = [{
       start: this.date + ' 00:00',
@@ -253,10 +285,17 @@ export class Scatter {
   }
 
   initialisePlot() {
+    let xAxisEnd: string;
+    if (this.date == this.todayDate) {
+      xAxisEnd = this.todayDateTime;
+      console.log('set end xaxis as ', xAxisEnd)
+    } else {
+      xAxisEnd = this.date + ' 23:59';
+    } 
 
     const layout: Partial<Plotly.Layout> = {
       xaxis: { 
-        range: [this.date + ' 00:00', this.date + ' 23:59'],
+        range: [this.date + ' 00:00', xAxisEnd],
         fixedrange: true,
         showgrid: false,
         tickformat: '%H:%M'
@@ -264,16 +303,17 @@ export class Scatter {
       yaxis: {
         type: 'category',
         fixedrange: true,
-        showticklabels: true,
+        showticklabels: false,
         showgrid: true,
         griddash: 'dash',
         gridcolor: '#2741abff'
       },
       images: this.images,
       shapes: this.shapes,
+      annotations: this.annotations,
       showlegend: false,
       margin: {
-        l: 200,
+        l: 20,
         t: 15,
         b: 40,
         r: 10

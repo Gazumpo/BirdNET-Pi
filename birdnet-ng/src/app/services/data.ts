@@ -8,7 +8,8 @@ import { BirdSpecies } from '../models/bird-species';
   providedIn: 'root'
 })
 export class Data {
-  private apiUrl = 'http://birdnet.local:3000';
+  //private apiUrl = 'http://birdnet.local:3000';
+  private apiUrl = '/birdapi';
   private birdCache = new Map<string, BirdSpecies>();
 
 

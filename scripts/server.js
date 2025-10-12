@@ -118,7 +118,7 @@ app.get("/stats-day", async (req, res) => {
 
     let numDetectTodaySql = "SELECT COUNT(*) AS COUNT FROM detections WHERE Date = \'" + date + "\'"
     let uniqueBirdsTodaySql = "SELECT COUNT(DISTINCT Sci_Name) AS uniqueCountToday FROM detections WHERE Date = \'" + date + "\'"
-    let newSpeciesTodaySql = "SELECT d1.Com_Name, d1.Sci_Name FROM detections d1 WHERE d1.Date = \'" + date + "\'" + " AND NOT EXISTS (SELECT 1 FROM detections d2 WHERE d2.Sci_Name = d1.Sci_Name AND d2.Date <> \'" + date + "\')"
+    let newSpeciesTodaySql = "SELECT DISTINCT d1.Com_Name, d1.Sci_Name FROM detections d1 WHERE d1.Date = '" + date + "' AND NOT EXISTS (SELECT 1 FROM detections d2 WHERE d2.Sci_Name = d1.Sci_Name AND d2.Date <> '" + date + "')"
     let speciesTodaySql = "SELECT DISTINCT Sci_Name FROM detections WHERE Date = \'" + date + "\'"
 
     const [numDetectToday, uniqueBirdsToday, newSpeciesToday, speciesToday] = await Promise.all([
