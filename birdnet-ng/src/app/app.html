@@ -1,9 +1,33 @@
 <div class="app-layout">
   <app-header />
+
   <div class="content-area">
-    <app-sidebar />
+    @if (isDesktopOrTablet()) {
+      <app-sidebar />
+    }
+
     <div class="main-content">
       <router-outlet />
     </div>
   </div>
+
+  @if (isHandset()) {
+    <nav class="tabbar" role="tablist" aria-label="Primary">
+      <a routerLink="/detections" aria-label="Detections">
+        <span class="i"><img src="icons/detections_white.svg" alt="" aria-hidden="true" /></span><span class="t">Detections</span>
+      </a>
+      <a routerLink="/daily" aria-label="Daily">
+        <span class="i"><img src="icons/daily_white.svg" alt="" aria-hidden="true" /></span><span class="t">Daily</span>
+      </a>
+      <a routerLink="/weekly" aria-label="Weekly">
+        <span class="i"><img src="icons/weekly_white.svg" alt="" aria-hidden="true" /></span><span class="t">Weekly</span>
+      </a>
+      <a routerLink="/alltime" aria-label="All">
+        <span class="i"><img src="icons/all_white.svg" alt="" aria-hidden="true" /></span><span class="t">All</span>
+      </a>
+      <a routerLink="/species" aria-label="Species">
+        <span class="i"><img src="icons/birds_white.svg" alt="" aria-hidden="true" /></span><span class="t">Species</span>
+      </a>
+    </nav>
+  }
 </div>

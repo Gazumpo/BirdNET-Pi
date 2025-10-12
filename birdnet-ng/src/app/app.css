@@ -19,3 +19,58 @@
     padding: 1rem;
     overflow-y: auto;
 }
+
+/* --- Additions for handset tab bar --- */
+:root {
+  --safe-b: env(safe-area-inset-bottom, 0);
+}
+
+.tabbar {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 6px 0 calc(8px + var(--safe-b));
+  z-index: 50;
+  background-color: #000000;
+}
+
+.tabbar a {
+  text-decoration: none;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 12px 2px;
+  color: #ffffff;
+}
+
+.tabbar a.active {
+  font-weight: 700;
+}
+
+.tabbar .i {
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabbar .i img {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+.tabbar .t { font-size: 11px; }
+
+/* Leave space at the bottom for the tab bar on small screens */
+@media (max-width: 768px) {
+  .main-content {
+    padding-bottom: 72px; /* room for tab bar */
+  }
+}
