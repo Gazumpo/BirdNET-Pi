@@ -46,7 +46,7 @@
   gap: 8px;
   font-size: 12px;
   line-height: 1.4;
-  padding: 12px 2px;
+  padding: 12px 2px 24px;
   color: #ffffff;
 }
 
@@ -62,8 +62,8 @@
 }
 
 .tabbar .i img {
-  width: 22px;
-  height: 22px;
+  width: 35px;
+  height: 35px;
   display: block;
 }
 .tabbar .t { font-size: 11px; }
