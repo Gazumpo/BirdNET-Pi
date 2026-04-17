@@ -4,7 +4,8 @@ import { BirdDetection } from '../models/bird-detection.model';
 import { BirdSpecies } from '../models/bird-species';
 import { Ws } from '../services/ws';
 import { DetectionDetail } from '../bird-components/detection-detail/detection-detail';
-import { map, switchMap, catchError, takeUntil } from 'rxjs/operators';
+import { DetectionNotifications } from '../services/detection-notifications';
+import { switchMap, catchError, takeUntil } from 'rxjs/operators';
 import { forkJoin, of, Subject, Subscription } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { Sunrise } from '../services/sunrise';
@@ -35,7 +36,8 @@ export class Detections {
   constructor(
     private Data: Data,
     private Ws: Ws,
-    private Sunrise: Sunrise
+    private Sunrise: Sunrise,
+    private detectionNotifications: DetectionNotifications
   ) {}
   
   ngOnInit(): void {
@@ -58,11 +60,11 @@ export class Detections {
     }
 
     console.log('Connecting to WebSocket...');
-    this.wsSubscription = this.Ws.messages$.pipe(
+    this.wsSubscription = this.detectionNotifications.latestDetection$.pipe(
       takeUntil(this.destroy$),
-      switchMap(msg => {
-        console.log('Detected New Bird: ', msg);
-        this.lastDetection = new BirdDetection(msg);
+      switchMap(detection => {
+        console.log('Detected New Bird: ', detection);
+        this.lastDetection = detection;
         setTimeout(() => { this.lastDetection = null; }, 60000);
         return forkJoin({
           birdsData: this.Data.getBirds(),

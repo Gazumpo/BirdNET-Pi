@@ -5,10 +5,11 @@ import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Header } from './header/header';
 import { Sidebar } from './sidebar/sidebar';
+import { DetectionOverlay } from './detection-overlay/detection-overlay';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Header, Sidebar],
+  imports: [RouterOutlet, RouterLink, Header, Sidebar, DetectionOverlay],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

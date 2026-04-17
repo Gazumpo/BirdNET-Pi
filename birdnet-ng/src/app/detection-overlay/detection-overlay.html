@@ -1,0 +1,53 @@
+@if (currentDetection) {
+  <div class="detection-overlay" role="status" aria-live="polite">
+    <div class="overlay-card">
+      <button class="overlay-close" type="button" (click)="clearDetection()" aria-label="Dismiss notification">
+        ✕
+      </button>
+      <div class="overlay-grid">
+        <div class="overlay-media">
+          <img
+            [src]="currentBird?.imageUrl || currentDetection.imageUrl"
+            [alt]="currentDetection.Com_Name"
+          />
+          <div class="overlay-score">
+            Confidence
+            <strong>{{ currentDetection.Confidence | percent: '1.0-0' }}</strong>
+          </div>
+        </div>
+
+        <div class="overlay-content">
+          <p class="overlay-label">New detection</p>
+          <h2 class="overlay-title">{{ currentDetection.Com_Name }}</h2>
+          <p class="overlay-subtitle"><em>{{ currentDetection.Sci_Name }}</em></p>
+          @if (currentBird?.rarity) {
+            <span class="overlay-rarity" [ngClass]="'rarity-' + ((currentBird?.rarity ?? '') | spaceToUnderscore)">{{ currentBird?.rarity }}</span>
+          }
+
+          <div class="overlay-meta">
+            <div>
+              <span>Date</span>
+              <strong>{{ currentDetection.Date }}</strong>
+            </div>
+            <div>
+              <span>Time</span>
+              <strong>{{ currentDetection.Time }}</strong>
+            </div>
+            @if (currentDetection.timeType) {
+              <div>
+                <span>Period</span>
+                <strong>{{ currentDetection.timeType }}</strong>
+              </div>
+            }
+          </div>
+
+          <div class="overlay-actions">
+            <button type="button" (click)="goToDetections()">View detections</button>
+            <button type="button" class="secondary" (click)="goToBirdDetail()">Species details</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}
