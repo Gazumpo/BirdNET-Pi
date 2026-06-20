@@ -1,5 +1,5 @@
     :host {
-      --sidebar-width-desktop: 125px;
+      --sidebar-width-desktop: 148px;
       --sidebar-width-mobile: 50px;
       display: block;
       height: 100%;
@@ -30,23 +30,32 @@
       text-decoration: none;
       color: #ecf0f1;
       font-weight: bold;
+      font-size: 0.95rem;
+      line-height: 1.2;
       display: block;
-      padding: 0.75rem 1rem;
+      padding: 0.7rem 0.9rem;
       border-radius: 8px;
-      transition: background-color 0.3s ease, color 0.3s ease;
+      transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
     }
     a:hover {
       background-color: #34495e;
       color: #ffffff;
+      transform: translateX(2px);
+    }
+
+    a:focus-visible {
+      outline: 3px solid #93c5fd;
+      outline-offset: 2px;
     }
     
     .active-link {
       background-color: #007bff;
       color: white;
-      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 8px 20px rgba(0, 123, 255, 0.28);
     }
     .active-link:hover {
       background-color: #0069d9;
+      transform: none;
     }
 
     .hamburger-menu {

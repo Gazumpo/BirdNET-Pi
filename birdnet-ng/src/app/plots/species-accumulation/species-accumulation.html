@@ -1,0 +1,28 @@
+<section class="chart-shell surface-card" aria-labelledby="species-accumulation-title">
+  <div class="chart-shell__header">
+    <h3 class="chart-shell__title" id="species-accumulation-title">Species accumulation curve</h3>
+    <p class="chart-shell__copy">How the total number of species has grown over the life of the station.</p>
+  </div>
+
+  @if (!hasData) {
+    <div class="state-card">
+      <span class="state-card__title">No accumulation data available yet.</span>
+      <span class="state-card__copy">Species growth will appear here once enough detection history exists.</span>
+    </div>
+  } @else {
+    <div
+      #mainPlotAccumulation
+      class="plot-canvas"
+      role="img"
+      [attr.aria-label]="chartAriaLabel"
+    ></div>
+
+    @if (summaryItems.length > 0) {
+      <ul class="chart-shell__summary">
+        @for (item of summaryItems; track item.label) {
+          <li class="chart-shell__summary-item"><strong>{{ item.label }}</strong>: {{ item.value }}</li>
+        }
+      </ul>
+    }
+  }
+</section>

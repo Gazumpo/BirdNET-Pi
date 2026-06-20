@@ -1,40 +1,329 @@
+.container,
+.summary-panel {
+  max-width: 52rem;
+  margin: 0 auto 1.25rem;
+}
 
+.summary-panel {
+  padding: 1.15rem;
+}
+
+.section-heading,
 .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 48rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.section-heading h2,
+.header-container h2 {
+  margin: 0;
+  color: #1f2937;
+}
+
+.section-subtitle,
+.summary-date,
+.highlight-label {
+  margin: 0.2rem 0 0;
+  color: #6b7280;
+  font-size: 0.92rem;
+}
+
+.live-pill {
+  flex-shrink: 0;
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 1px solid #bbf7d0;
+}
+
+.live-pill--muted {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+  color: #4b5563;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.summary-card {
+  border: 1px solid #e3e8f0;
+  border-radius: 14px;
+  padding: 0.95rem;
+  background: #fff;
+}
+
+.summary-card strong {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 1.85rem;
+  line-height: 1;
+  color: #1d4ed8;
+}
+
+.summary-label {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.bird-list--summary {
+  margin-top: 0.75rem;
+  max-height: none;
+}
+
+.highlight-block {
+  margin-top: 1rem;
+}
+
+.detections-sticky-controls {
+  position: sticky;
+  top: -1.25rem;
+  z-index: 6;
+  margin-bottom: 1.1rem;
+  padding: 0 0 .15rem;
+  background: var(--page-bg);
+}
+
+.detections-sticky-controls .page-header {
+  margin-bottom: 0.65rem;
+}
+
+.filters-panel {
+  margin: 0;
+}
+
+.filters-bar {
+  display: none;
+}
+
+.filters-fields {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.8fr) repeat(3, minmax(120px, 1fr));
+  gap: 0.85rem;
+  align-items: end;
+}
+
+.filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  background: #1d4ed8;
+  color: #fff;
+  font-size: 0.76rem;
 }
 
 .refresh-button {
-    /* Optional: Add some basic styling to make it look like a button */
-    padding: 8px 12px;
-    cursor: pointer;
-    color: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dbe4ef;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  width: 46px;
+  height: 46px;
+  cursor: pointer;
 }
 
-.controls-container {
-    display: flex;
-    gap: 1rem;
+.state-actions {
+  margin-top: 0.9rem;
+  display: flex;
+  justify-content: center;
+}
+
+.detection-skeleton-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.detection-skeleton {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.detection-skeleton__image {
+  height: 92px;
+}
+
+@media (max-width: 768px) {
+  .summary-panel,
+  .container {
+    margin-bottom: 1rem;
+  }
+
+  .summary-panel {
+    padding: 0.75rem;
+  }
+
+  .section-heading {
     align-items: center;
-}
+    flex-direction: row;
+    gap: 0.6rem;
+  }
 
-.control-dropdown {
-    /* Base styling for the dropdown */
-    padding: 0.5rem 2rem 0.5rem 1rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 1.5rem; /* Rounded pill shape */
-    background-color: #fff;
+  .header-container {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .section-heading h2 {
+    font-size: 1.05rem;
+  }
+
+  .summary-date {
+    display: none;
+  }
+
+  .live-pill {
+    padding: 0.28rem 0.52rem;
+    font-size: 0.72rem;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.65rem;
+  }
+
+  .summary-card {
+    border-radius: 10px;
+    padding: 0.55rem 0.6rem;
+  }
+
+  .summary-card strong {
+    margin-top: 0.18rem;
+    font-size: 1.35rem;
+  }
+
+  .summary-label {
+    display: block;
+    font-size: 0.72rem;
+    line-height: 1.15;
+  }
+
+  .bird-list--summary {
+    display: none;
+  }
+
+  .highlight-block {
+    display: none;
+  }
+
+  .filters-panel {
+    gap: 0;
+    padding: 0.48rem 0.55rem;
+    border-radius: 14px;
+  }
+
+  .detections-sticky-controls {
+    top: -1rem;
+    margin-bottom: 1rem;
+  }
+
+  .detections-sticky-controls .page-header {
+    margin-bottom: 0.55rem;
+  }
+
+  .refresh-button {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+  }
+
+  .filters-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+
+  .filters-toggle,
+  .filters-clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
     cursor: pointer;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none; /* Removes default dropdown arrow */
-    outline: none;
-    transition: all 0.2s ease-in-out;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
+  }
 
-.detections-viewport {
-  height: 85vh; /* Or whatever height you need */
+  .filters-toggle {
+    gap: 0.45rem;
+    min-height: 38px;
+    padding: 0 0.3rem;
+    color: #243142;
+    font-weight: 700;
+  }
+
+  .filters-toggle__icon {
+    color: #1d4ed8;
+    flex-shrink: 0;
+  }
+
+  .filters-clear {
+    min-height: 34px;
+    padding: 0 0.62rem;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .filters-fields {
+    display: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+    margin-top: 0.5rem;
+  }
+
+  .filters-panel--expanded .filters-fields {
+    display: grid;
+  }
+
+  .field--search,
+  .filter-actions {
+    grid-column: 1 / -1;
+  }
+
+  .field {
+    gap: 0.2rem;
+  }
+
+  .field span {
+    font-size: 0.74rem;
+  }
+
+  .field input,
+  .field select {
+    height: 40px;
+    border-radius: 10px;
+    padding: 0 0.65rem;
+    font-size: 0.88rem;
+  }
+
+  .filter-actions .button-secondary {
+    min-height: 38px;
+  }
+
+  .detection-skeleton {
+    grid-template-columns: 1fr;
+  }
+
+  .detection-skeleton__image {
+    height: 180px;
+  }
+
 }

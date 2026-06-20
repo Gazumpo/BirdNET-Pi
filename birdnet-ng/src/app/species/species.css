@@ -1,67 +1,97 @@
+.species-shell {
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.species-header {
+  margin-bottom: 1rem;
+}
+
+.species-header h2 {
+  margin: 0;
+  color: #1f2937;
+}
+
+.species-subtitle {
+  margin: 0.3rem 0 0;
+  color: #6b7280;
+}
+
+.filters-panel {
+  margin-bottom: 1rem;
+}
+
+.filters-bar {
+  display: none;
+}
+
+.filters-fields {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.6fr) repeat(2, minmax(150px, 0.8fr)) auto;
+  gap: 0.85rem;
+  align-items: end;
+}
+
+.filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  background: #1d4ed8;
+  color: #fff;
+  font-size: 0.76rem;
+  line-height: 1;
+}
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1rem;
-}
-.bird-card {
-  cursor: pointer;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 0.5rem;
-  text-align: center;
-}
-.bird-card img {
-  max-width: 100%;
-  border-radius: 6px;
 }
 
 .button-row {
   display: flex;
   justify-content: center;
-  gap: 1.5rem; /* Space between buttons */
-  margin-bottom: 2rem; /* Spacing below the button row */
-  flex-wrap: wrap; /* Allows buttons to wrap on smaller screens */
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
 }
 
 .button-row button {
-  background-color: transparent;
+  background: rgba(255, 255, 255, 0.72);
   color: #34495e;
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
-  font-family: 'Poppins', sans-serif; /* Use your application's modern font */
-  font-size: 1rem;
+  border: 1px solid #d7dee8;
+  border-radius: 999px;
+  min-height: 44px;
+  padding: 0 1.2rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+  transition: all 0.22s ease-in-out;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.04);
 }
 
 .button-row button:hover {
-  background-color: #ecf0f1;
-  color: #2c3e50;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px); /* Slight lift on hover */
+  background-color: #ffffff;
+  color: #1f2937;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
 }
 
-.button-row button:active {
-  transform: translateY(0); /* "Press down" effect */
-}
-
-/* Style for the active/selected button */
 .button-row button.active {
-  background-color: #3498db; /* A bright, distinct color */
+  background-color: #2563eb;
   color: #ffffff;
-  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4);
+  border-color: #2563eb;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
   font-weight: 600;
 }
 
-/* Keep your existing styling, and add this at the bottom */
-
-/* === Arrow Icon Styling === */
 .button-row button span {
   display: inline-block;
-  margin-left: 0.5rem; /* Space between text and arrow */
+  margin-left: 0.5rem;
   width: 0;
   height: 0;
   vertical-align: middle;
@@ -71,18 +101,141 @@
 .button-row button span.arrow-up {
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-bottom: 5px solid #fff; /* Use the button's text color */
+  border-bottom: 5px solid currentColor;
 }
 
 .button-row button span.arrow-down {
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-top: 5px solid #fff; /* Use the button's text color */
+  border-top: 5px solid currentColor;
 }
 
-/* Ensure the arrow color matches the active button's text color */
-.button-row button.active span.arrow-up,
-.button-row button.active span.arrow-down {
-  border-bottom-color: #ffffff;
-  border-top-color: #ffffff;
+.state-actions {
+  margin-top: 0.9rem;
+  display: flex;
+  justify-content: center;
+}
+
+.species-skeleton {
+  overflow: hidden;
+  padding: 0;
+}
+
+.species-skeleton__media {
+  width: 100%;
+  height: 190px;
+  border-radius: 0;
+}
+
+.species-skeleton__body {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.1rem;
+}
+
+.species-skeleton__stats {
+  display: grid;
+  gap: 0.55rem;
+}
+
+@media (max-width: 768px) {
+  .filters-panel {
+    gap: 0;
+    padding: 0.48rem 0.55rem;
+    border-radius: 14px;
+  }
+
+  .filters-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+
+  .filters-toggle,
+  .filters-clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .filters-toggle {
+    gap: 0.45rem;
+    min-height: 38px;
+    padding: 0 0.3rem;
+    color: #243142;
+    font-weight: 700;
+  }
+
+  .filters-toggle__icon {
+    color: #1d4ed8;
+    flex-shrink: 0;
+  }
+
+  .filters-clear {
+    min-height: 34px;
+    padding: 0 0.62rem;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .filters-fields {
+    display: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+    margin-top: 0.5rem;
+  }
+
+  .filters-panel--expanded .filters-fields {
+    display: grid;
+  }
+
+  .field--search,
+  .filter-actions {
+    grid-column: 1 / -1;
+  }
+
+  .field {
+    gap: 0.2rem;
+  }
+
+  .field span {
+    font-size: 0.74rem;
+  }
+
+  .field input,
+  .field select {
+    height: 40px;
+    border-radius: 10px;
+    padding: 0 0.65rem;
+    font-size: 0.88rem;
+  }
+
+  .filter-actions .button-secondary {
+    min-height: 38px;
+  }
+
+  .button-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .button-row button {
+    width: 100%;
+    min-height: 40px;
+    padding: 0 0.45rem;
+    font-size: 0.84rem;
+    white-space: nowrap;
+  }
+
+  .button-row button span {
+    margin-left: 0.25rem;
+  }
 }

@@ -1,23 +1,45 @@
-
-<div class="grid-container">
-  <div class="grid-item">
-    <h2>Detections</h2>
-    @if (stats) {
-    <p class="stat-number">{{ stats.numberDetections }}</p>
-    }
-  </div>
-  <div class="grid-item">
-    <h2>Species</h2>
-    @if (stats) {
-    <p class="stat-number" (click)="showSpecies()">{{ stats.numberSpecies }}</p>
-    }
-  </div>
-  <div class="grid-item">
-    <h2>Days Running</h2>
-    @if (stats) {
-    <p class="stat-number">{{ stats.numberDays }}</p>
-    }
+<section class="stats-shell page-shell">
+  <div class="page-header">
+    <div>
+      <h2>All-time stats</h2>
+      <p class="page-subtitle">Overall activity since the station started running.</p>
+    </div>
   </div>
 
-</div>
+  @if (loading) {
+    <div class="stats-grid">
+      @for (item of [1, 2, 3, 4, 5]; track item) {
+        <div class="stat-card surface-card">
+          <div class="skeleton skeleton-line skeleton-line--short"></div>
+          <div class="skeleton stat-skeleton__value"></div>
+        </div>
+      }
+    </div>
+  } @else if (errorMessage) {
+    <div class="state-card state-card--error">{{ errorMessage }}</div>
+  } @else if (stats) {
+    <div class="stats-grid">
+      <div class="stat-card surface-card">
+        <h3>Detections</h3>
+        <p class="stat-number">{{ stats.numberDetections }}</p>
+      </div>
+      <div class="stat-card surface-card">
+        <h3>Species</h3>
+        <button class="stat-number stat-number--link" type="button" (click)="showSpecies()">{{ stats.numberSpecies }}</button>
+      </div>
+      <div class="stat-card surface-card">
+        <h3>Days running</h3>
+        <p class="stat-number">{{ stats.numberDays }}</p>
+      </div>
+      <div class="stat-card surface-card">
+        <h3>Avg detections / day</h3>
+        <p class="stat-number">{{ stats.avgDetectionsDaily | number:'1.0-1' }}</p>
+      </div>
+      <div class="stat-card surface-card">
+        <h3>Avg species / day</h3>
+        <p class="stat-number">{{ stats.avgSpeciesDaily | number:'1.0-1' }}</p>
+      </div>
+    </div>
 
+  }
+</section>

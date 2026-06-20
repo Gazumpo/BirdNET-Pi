@@ -14,7 +14,6 @@ export class Sunrise {
   }
 
   getSunrise(date: string): Observable<any> {
-    console.log('sunrise api', this.apiUrl)
     let params = new HttpParams()
       .set('lat', '-31.9832')
       .set('lng', '115.7762')

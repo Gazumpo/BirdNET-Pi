@@ -1,45 +1,66 @@
-<div class="grid-container">
-  <div class="grid-item">
-    <h2>Detections Today</h2>
-    @if (stats) {
-    <p class="stat-number">{{ stats.numberDetectionsToday }}</p>
-    }
+<section class="stats-shell page-shell page-shell--narrow">
+  <div class="page-header">
+    <div>
+      <h2>Daily stats</h2>
+      <p class="page-subtitle">Bird activity snapshot for the selected station day.</p>
+    </div>
   </div>
-  <div class="grid-item">
-    <h2>Species Today</h2>
-    @if (stats) {
-    <p class="stat-number">{{ stats.numberSpeciesToday }}</p>
-    }
-  </div>
-  <div class="grid-item">
-    <h2>New Species Today</h2>
-    @if (stats) {
-        @if (stats.newSpeciesToday?.length > 0) {
-            @for (bird of stats.newSpeciesToday; track bird) {
-              <div class="bird-item" (click)="goToBirdDetail(bird.Sci_Name)">
-                  <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
-                  <p class="bird-name">{{ bird.Com_Name }}</p>
-              </div>
-            }
-        } @else {
-            <p class="stat-number">0</p>
-        }
-    }
-  </div>
-  <div class="grid-item">
-    <h2>Rare Species Today</h2>
-    @if (stats) {
-        @if (stats.rareSpeciesToday?.length > 0) {
-            @for (bird of stats.rareSpeciesToday; track bird.Sci_Name) {
-              <div class="bird-item" (click)="goToBirdDetail(bird.Sci_Name)">
-                  <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
-                  <p class="bird-name">{{ bird.Com_Name }}</p>
-              </div>
-            }
-        } @else {
-            <p class="stat-number">0</p>
-        }
-    }
-  </div>
-</div>
 
+  @if (loading) {
+    <div class="stats-grid">
+      @for (item of [1, 2, 3, 4]; track item) {
+        <div class="stat-card surface-card">
+          <div class="skeleton skeleton-line skeleton-line--short"></div>
+          <div class="skeleton stat-skeleton__value"></div>
+          <div class="stat-skeleton__list">
+            <div class="skeleton skeleton-line"></div>
+            <div class="skeleton skeleton-line skeleton-line--short"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (errorMessage) {
+    <div class="state-card state-card--error">{{ errorMessage }}</div>
+  } @else if (stats) {
+    <div class="stats-grid">
+      <div class="stat-card surface-card">
+        <h3>Detections today</h3>
+        <p class="stat-number">{{ stats.numberDetectionsToday }}</p>
+      </div>
+      <div class="stat-card surface-card">
+        <h3>Species today</h3>
+        <p class="stat-number">{{ stats.numberSpeciesToday }}</p>
+      </div>
+      <div class="stat-card surface-card">
+        <h3>New species today</h3>
+        @if (stats.newSpeciesToday?.length > 0) {
+          <div class="bird-list">
+            @for (bird of stats.newSpeciesToday; track bird.Sci_Name) {
+              <button class="bird-item" type="button" (click)="goToBirdDetail(bird.Sci_Name)">
+                <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
+                <span class="bird-name">{{ bird.Com_Name }}</span>
+              </button>
+            }
+          </div>
+        } @else {
+          <p class="stat-empty">None yet</p>
+        }
+      </div>
+      <div class="stat-card surface-card">
+        <h3>Rare species today</h3>
+        @if (stats.rareSpeciesToday?.length > 0) {
+          <div class="bird-list">
+            @for (bird of stats.rareSpeciesToday; track bird.Sci_Name) {
+              <button class="bird-item" type="button" (click)="goToBirdDetail(bird.Sci_Name)">
+                <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
+                <span class="bird-name">{{ bird.Com_Name }}</span>
+              </button>
+            }
+          </div>
+        } @else {
+          <p class="stat-empty">None today</p>
+        }
+      </div>
+    </div>
+  }
+</section>

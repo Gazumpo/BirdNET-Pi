@@ -9,6 +9,12 @@ export class BirdSpecies {
     percentTotal?: number;
     rarity?: string;
     detectionDatesCount?: any;
+    firstHeard?: string;
+    lastHeard?: string;
+    previousHeard?: string | null;
+    returnGapDays?: number | null;
+    hasRecentReturn?: boolean;
+    daysSinceLastHeard?: number;
 
     imageUrl?: string;
 
@@ -20,6 +26,12 @@ export class BirdSpecies {
         this.percentDaily = data.percentDaily;
         this.percentTotal = data.percentTotal;
         this.detectionDatesCount = data.detectionDatesCount;
+        this.firstHeard = data.firstHeard;
+        this.lastHeard = data.lastHeard;
+        this.previousHeard = data.previousHeard;
+        this.returnGapDays = data.returnGapDays;
+        this.hasRecentReturn = data.hasRecentReturn;
+        this.daysSinceLastHeard = data.daysSinceLastHeard;
 
 
         if (this.percentDaily !== undefined) {

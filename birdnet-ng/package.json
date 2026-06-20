@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
+    "deploy:pi": "ng build --configuration=production && rsync -az --delete --delay-updates dist/birdnet-ng/ graeme@birdnet.local:/home/graeme/BirdNET-Pi/birdnet-ng/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

@@ -1,5 +1,10 @@
-import { Component, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import Plotly from 'plotly.js-dist-min';
+
+interface DetectionDateCount {
+  Date: string;
+  COUNT: number;
+}
 
 @Component({
   selector: 'app-bar-species',
@@ -9,61 +14,117 @@ import Plotly from 'plotly.js-dist-min';
 })
 export class BarSpecies {
   plotData: Plotly.Data[] = [];
-  private _detectionDatesCount!: any
+  summaryItems: Array<{ label: string; value: string }> = [];
+  chartAriaLabel = 'Species detection trend chart';
+  hasData = false;
 
-  @ViewChild('mainPlotBar', { static: true }) mainPlotBar!: ElementRef;
+  private _detectionDatesCount: DetectionDateCount[] = [];
+  private plotHost?: ElementRef<HTMLDivElement>;
 
-
-  constructor(
-  ) {}
-
-  @Input()
-  set detectionDatesCount(newdetectionDatesCount: any) {
-    console.log(newdetectionDatesCount)
-    this._detectionDatesCount = newdetectionDatesCount;
-    this.plotData = [];
-    this.setPlotData();
-    this.initialisePlot();
+  @ViewChild('mainPlotBar')
+  set mainPlotBarRef(ref: ElementRef<HTMLDivElement> | undefined) {
+    this.plotHost = ref;
+    if (ref && this.hasData) {
+      queueMicrotask(() => this.buildChart());
+    }
   }
 
-  get detectionDatesCount(): any {
+  @Input()
+  set detectionDatesCount(newDetectionDatesCount: DetectionDateCount[]) {
+    this._detectionDatesCount = newDetectionDatesCount ?? [];
+    this.buildChart();
+  }
+
+  get detectionDatesCount(): DetectionDateCount[] {
     return this._detectionDatesCount;
   }
 
-  ngAfterViewInit() {
+  private buildChart() {
+    this.hasData = this.detectionDatesCount.length > 0;
+    this.summaryItems = this.buildSummary();
+
+    const plotHost = this.plotHost;
+    if (!plotHost) {
+      return;
+    }
+
+    if (!this.hasData) {
+      this.plotData = [];
+      Plotly.purge(plotHost.nativeElement);
+      return;
+    }
+
+    this.plotData = [{
+      type: 'bar',
+      x: this.detectionDatesCount.map(item => item.Date),
+      y: this.detectionDatesCount.map(item => item.COUNT),
+      marker: {
+        color: '#3b82f6'
+      },
+      hovertemplate: '%{x}: %{y} detections<extra></extra>'
+    }];
+
+    this.chartAriaLabel = this.buildAriaLabel();
     this.initialisePlot();
   }
 
-  setPlotData() {
-    this.plotData.push({
-      type: 'bar',
-      x: this.detectionDatesCount.map((item: { Date: any; }) => item.Date),
-      y: this.detectionDatesCount.map((item: { COUNT: any; }) => item.COUNT)
-    })
-    console.log(this.plotData)
-  };
+  private initialisePlot() {
+    const plotHost = this.plotHost;
+    if (!plotHost) {
+      return;
+    }
 
-  initialisePlot() {
+    const compactLayout = window.innerWidth <= 768;
     const layout: Partial<Plotly.Layout> = {
       showlegend: false,
       margin: {
-        l: 50,
-        t: 15,
-        b: 100
+        l: 52,
+        t: 8,
+        b: compactLayout ? 88 : 108,
+        r: 16
+      },
+      xaxis: {
+        tickangle: compactLayout ? -42 : -34,
+        tickfont: { size: compactLayout ? 10 : 11 },
+        automargin: true,
+        nticks: compactLayout ? 6 : 10,
+        fixedrange: true
       },
       yaxis: {
         title: {
           text: 'Detections'
-        }
+        },
+        tickfont: { size: 11 },
+        fixedrange: true
       }
     };
 
     const config: Partial<Plotly.Config> = {
       responsive: true,
       displayModeBar: false,
-      displaylogo: false,
+      displaylogo: false
     };
 
-    Plotly.newPlot(this.mainPlotBar.nativeElement, this.plotData, layout, config);
+    Plotly.react(plotHost.nativeElement, this.plotData, layout, config);
+  }
+
+  private buildSummary() {
+    if (!this.hasData) {
+      return [];
+    }
+
+    const totalDetections = this.detectionDatesCount.reduce((sum, item) => sum + item.COUNT, 0);
+    const peakDay = [...this.detectionDatesCount].sort((a, b) => b.COUNT - a.COUNT)[0];
+
+    return [
+      { label: 'Recorded days', value: String(this.detectionDatesCount.length) },
+      { label: 'Total detections', value: String(totalDetections) },
+      { label: 'Peak day', value: `${peakDay.Date} (${peakDay.COUNT})` }
+    ];
+  }
+
+  private buildAriaLabel() {
+    const peakDay = [...this.detectionDatesCount].sort((a, b) => b.COUNT - a.COUNT)[0];
+    return `Species detection trend chart across ${this.detectionDatesCount.length} days. Peak day ${peakDay.Date} with ${peakDay.COUNT} detections.`;
   }
 }

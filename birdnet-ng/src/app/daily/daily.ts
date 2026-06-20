@@ -3,6 +3,7 @@ import { Scatter } from '../plots/scatter/scatter';
 import { BarDaily } from '../plots/bar-daily/bar-daily';
 import { FormsModule } from '@angular/forms';
 import { DailyStats } from "../stats/daily-stats/daily-stats"; 
+import { shiftStationDate, stationToday } from '../utils/station-time';
 
 
 @Component({
@@ -12,46 +13,31 @@ import { DailyStats } from "../stats/daily-stats/daily-stats";
   styleUrl: './daily.css'
 })
 export class Daily {
-  date: string = new Date().toLocaleDateString("en-CA", { timeZone: "Australia/Perth" }).slice(0, 10);
+  date: string = stationToday();
   range: string = 'all-day'
   selectedTime: string = '50'
 
-  onDateChange(): void {
-    if (this.date) {
-      console.log('The date was changed to:', this.date);
-      // You can call other functions here or update your UI
-    } else {
-      console.log('Date was cleared.');
-    }
-  }
+  onDateChange(): void {}
 
   previousDay(): void {
-    const currentDate = new Date(this.date);
-    currentDate.setDate(currentDate.getDate() - 1);
-    this.date = currentDate.toLocaleDateString("en-CA", { timeZone: "Australia/Perth" }).slice(0, 10);
-    console.log('Previous day:', this.date);
+    this.date = shiftStationDate(this.date, -1);
   }
 
   nextDay(): void {
-    const currentDate = new Date(this.date);
-    currentDate.setDate(currentDate.getDate() + 1);
-    this.date = currentDate.toLocaleDateString("en-CA", { timeZone: "Australia/Perth" }).slice(0, 10);
-    console.log('Next day:', this.date);
+    this.date = shiftStationDate(this.date, 1);
   }
 
   today(): void {
-    this.date = new Date().toLocaleDateString("en-CA", { timeZone: "Australia/Perth" }).slice(0, 10);
+    this.date = stationToday();
   }
 
   rangeChange(event: Event) {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.range = selectedValue;
-    console.log(selectedValue)
   }
 
   timeChange(event: Event) {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.selectedTime = selectedValue;
-    console.log(selectedValue)
   }
 }

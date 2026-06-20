@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, tap, map } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 import { BirdDetection } from '../models/bird-detection.model';
 import { BirdSpecies } from '../models/bird-species';
 
@@ -11,6 +12,7 @@ export class Data {
   //private apiUrl = 'http://birdnet.local:3000';
   private apiUrl = '/birdapi';
   private birdCache = new Map<string, BirdSpecies>();
+  private birdsCache$?: Observable<BirdSpecies[]>;
 
 
   constructor(private http: HttpClient) {}
@@ -45,16 +47,22 @@ export class Data {
     );
   }
 
-  getBirds(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/birds`).pipe(
-      map(data => data.map(item => new BirdSpecies(item)))
+  getBirds(forceRefresh: boolean = false): Observable<BirdSpecies[]> {
+    if (this.birdsCache$ && !forceRefresh) {
+      return this.birdsCache$;
+    }
+
+    this.birdsCache$ = this.http.get<any[]>(`${this.apiUrl}/birds`).pipe(
+      map(data => data.map(item => new BirdSpecies(item))),
+      shareReplay(1)
     );
+
+    return this.birdsCache$;
   }
 
   getBird(Sci_Name: string): Observable<BirdSpecies> {
     if (this.birdCache.has(Sci_Name)) {
-      console.log(`Returning bird details for '${Sci_Name}' from cache.`);
-      return of(this.birdCache.get(Sci_Name)!); // Use '!' because we know it exists due to .has()
+      return of(this.birdCache.get(Sci_Name)!);
     }
 
     let params = new HttpParams().set('bird', Sci_Name);

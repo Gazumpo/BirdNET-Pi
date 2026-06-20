@@ -1,1 +1,32 @@
-<div #mainPlotScatter class="plot-canvas"></div>
+<section class="chart-shell surface-card" aria-labelledby="daily-timeline-chart-title">
+  <div class="chart-shell__header">
+    <h3 class="chart-shell__title" id="daily-timeline-chart-title">Daily timeline</h3>
+    <p class="chart-shell__copy">Each row shows when a species was heard across the day. Tap or click a bird icon to open that species.</p>
+  </div>
+
+  @if (loading) {
+    <div class="plot-skeleton skeleton" aria-hidden="true"></div>
+  } @else if (errorMessage) {
+    <div class="state-card state-card--error">{{ errorMessage }}</div>
+  } @else if (!hasData) {
+    <div class="state-card">
+      <span class="state-card__title">No detections for this day.</span>
+      <span class="state-card__copy">Choose another date to see the daily listening timeline.</span>
+    </div>
+  } @else {
+    <div
+      #mainPlotScatter
+      class="plot-canvas"
+      role="img"
+      [attr.aria-label]="chartAriaLabel"
+    ></div>
+
+    @if (summaryItems.length > 0) {
+      <ul class="chart-shell__summary">
+        @for (item of summaryItems; track item.label) {
+          <li class="chart-shell__summary-item"><strong>{{ item.label }}</strong>: {{ item.value }}</li>
+        }
+      </ul>
+    }
+  }
+</section>

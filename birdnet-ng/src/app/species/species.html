@@ -1,27 +1,122 @@
+<section class="species-shell">
+  <div class="species-header page-header">
+    <div>
+      <h2>Species</h2>
+      <p class="species-subtitle">{{ filteredBirds.length }} results</p>
+    </div>
+  </div>
 
-<div class="button-row">
-  <button (click)="sortBirds('Com_Name')" [class.active]="currentSorting === 'Com_Name'">
-    Name
-    @if (currentSorting === 'Com_Name') {
-      <span [class.arrow-up]="sortDirection === 'asc'" [class.arrow-down]="sortDirection === 'desc'"></span>
-    }
-  </button>
-  <button (click)="sortBirds('rarity')" [class.active]="currentSorting === 'rarity'">
-    Rarity
-    @if (currentSorting === 'rarity') {
-      <span [class.arrow-up]="sortDirection === 'asc'" [class.arrow-down]="sortDirection === 'desc'"></span>
-    }
-  </button>
-  <button (click)="sortBirds('numberDetections')" [class.active]="currentSorting === 'numberDetections'">
-    Detections
-    @if (currentSorting === 'numberDetections') {
-      <span [class.arrow-up]="sortDirection === 'asc'" [class.arrow-down]="sortDirection === 'desc'"></span>
-    }
-  </button>
-</div>
+  <div class="filters-panel surface-card surface-card--muted" [class.filters-panel--expanded]="filtersExpanded">
+    <div class="filters-bar">
+      <button
+        class="filters-toggle"
+        type="button"
+        (click)="toggleFilters()"
+        [attr.aria-expanded]="filtersExpanded"
+        aria-controls="species-filter-fields"
+      >
+        <svg class="filters-toggle__icon" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor" aria-hidden="true"><path d="M440-160v-240h80v80h280v80H520v80h-80Zm-280-80v-80h200v80H160Zm160-160v-80H160v-80h160v-80h80v240h-80Zm160-80v-80h320v80H480Zm120-160v-240h80v80h120v80H680v80h-80Zm-440-80v-80h360v80H160Z"/></svg>
+        <span>Filters</span>
+        @if (activeFilterCount() > 0) {
+          <span class="filter-count">{{ activeFilterCount() }}</span>
+        }
+      </button>
 
-<div class="grid">
-  @for (bird of birds; track bird.Sci_Name) {
-    <app-species-card [bird]=bird></app-species-card>
+      @if (hasActiveFilters()) {
+        <button class="filters-clear" type="button" (click)="clearFilters()">Clear</button>
+      }
+    </div>
+
+    <div class="filters-fields" id="species-filter-fields">
+      <label class="field field--search">
+        <span>Search</span>
+        <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" placeholder="Search common or scientific name" />
+      </label>
+
+      <label class="field">
+        <span>Rarity</span>
+        <select [(ngModel)]="rarityFilter" (ngModelChange)="applyFilters()">
+          <option value="all">All</option>
+          <option value="very-rare">Very Rare</option>
+          <option value="rare">Rare</option>
+          <option value="common">Common</option>
+          <option value="very-common">Very Common</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Min detections</span>
+        <select [(ngModel)]="minDetections" (ngModelChange)="applyFilters()">
+          <option [ngValue]="0">Any</option>
+          <option [ngValue]="10">10+</option>
+          <option [ngValue]="50">50+</option>
+          <option [ngValue]="100">100+</option>
+        </select>
+      </label>
+
+      @if (hasActiveFilters()) {
+        <div class="filter-actions">
+          <button class="button-secondary" type="button" (click)="clearFilters()">Clear filters</button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="button-row">
+    <button (click)="sortBirds('Com_Name')" [class.active]="currentSorting === 'Com_Name'">
+      Name
+      @if (currentSorting === 'Com_Name') {
+        <span [class.arrow-up]="sortDirection === 'asc'" [class.arrow-down]="sortDirection === 'desc'"></span>
+      }
+    </button>
+    <button (click)="sortBirds('rarity')" [class.active]="currentSorting === 'rarity'">
+      Rarity
+      @if (currentSorting === 'rarity') {
+        <span [class.arrow-up]="sortDirection === 'asc'" [class.arrow-down]="sortDirection === 'desc'"></span>
+      }
+    </button>
+    <button (click)="sortBirds('numberDetections')" [class.active]="currentSorting === 'numberDetections'">
+      Detections
+      @if (currentSorting === 'numberDetections') {
+        <span [class.arrow-up]="sortDirection === 'asc'" [class.arrow-down]="sortDirection === 'desc'"></span>
+      }
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="grid grid--skeleton">
+      @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+        <div class="species-skeleton surface-card">
+          <div class="species-skeleton__media skeleton"></div>
+          <div class="species-skeleton__body">
+            <div class="skeleton skeleton-line skeleton-line--title"></div>
+            <div class="skeleton skeleton-line skeleton-line--short"></div>
+            <div class="species-skeleton__stats">
+              <div class="skeleton skeleton-line"></div>
+              <div class="skeleton skeleton-line"></div>
+              <div class="skeleton skeleton-line"></div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (errorMessage) {
+    <div class="state-card state-card--error">{{ errorMessage }}</div>
+  } @else if (filteredBirds.length === 0) {
+    <div class="state-card">
+      <span class="state-card__title">No species match these filters.</span>
+      <span class="state-card__copy">Try a broader search or reset the current filters.</span>
+      @if (hasActiveFilters()) {
+        <div class="state-actions">
+          <button class="button-secondary" type="button" (click)="clearFilters()">Clear filters</button>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="grid">
+      @for (bird of filteredBirds; track bird.Sci_Name) {
+        <app-species-card [bird]="bird"></app-species-card>
+      }
+    </div>
   }
-</div>
+</section>

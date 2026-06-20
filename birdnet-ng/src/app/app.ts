@@ -1,15 +1,14 @@
 import { Component, signal, inject, computed } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Header } from './header/header';
 import { Sidebar } from './sidebar/sidebar';
-import { DetectionOverlay } from './detection-overlay/detection-overlay';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Header, Sidebar, DetectionOverlay],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Header, Sidebar],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

@@ -1,152 +1,206 @@
 .bird-detail-container {
-  max-width: 1000px;
+  max-width: 70rem;
   margin: 0 auto;
-  padding: 2rem;
-  padding-top:0px;
-  font-family: 'Poppins', sans-serif;
   color: #34495e;
+}
+
+.detail-toolbar {
+  display: flex;
+  margin-bottom: 0.85rem;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 42px;
+  border: 1px solid #d7dee8;
+  border-radius: 999px;
+  padding: 0 0.9rem;
+  background: #fff;
+  color: #243142;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  border-color: #c5d0de;
+  background: #eef4ff;
+}
+
+.back-button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
 }
 
 .bird-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.35rem;
 }
 
 .bird-common-name {
-  font-size: 3rem;
+  font-size: clamp(2.2rem, 4vw, 3rem);
   font-weight: 700;
-  color: #2c3e50;
+  color: #243142;
   margin: 0;
 }
 
 .bird-sci-name {
-  font-size: 1.2rem;
-  color: #7f8c8d;
-  margin: 0.5rem 0;
+  font-size: 1.05rem;
+  color: #64748b;
+  margin: 0.45rem 0 0;
 }
 
 .bird-main-content {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Two-column layout */
-  gap: 2rem;
-}
-
-@media (max-width: 768px) {
-  .bird-main-content {
-    grid-template-columns: 1fr; /* Single column on smaller screens */
-  }
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: 1.25rem;
+  align-items: start;
 }
 
 .image-and-audio-section {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .bird-image-container {
-  width: 100%;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 0.8rem;
 }
 
 .bird-image {
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 14px;
 }
 
 .audio-detections {
-  padding: 1.5rem;
-  background-color: #f8f9fa;
-  border-radius: 12px;
+  display: grid;
+  gap: 0.85rem;
 }
 
 .audio-detections h4 {
-  margin-top: 0;
-  font-size: 1.2rem;
-  color: #34495e;
-}
-
-.audio-detections hr {
-  border: 0;
-  border-top: 1px solid #e0e0e0;
-  margin: 1rem 0;
+  margin: 0;
+  font-size: 1.12rem;
+  color: #243142;
 }
 
 .detection-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid #dfe7f1;
+  background: #fff;
 }
 
 .detection-label {
-  font-weight: 600;
-  color: #2c3e50;
+  font-weight: 700;
+  color: #243142;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .detection-info {
-  font-size: 0.9rem;
-  color: #555;
+  font-size: 0.92rem;
+  color: #475569;
 }
 
 .audio-player {
   width: 100%;
 }
 
-.bird-stats-section, .bird-description-section {
-  padding: 1.5rem;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+.bird-stats-section,
+.bird-description-section {
+  display: grid;
+  gap: 0.9rem;
 }
 
 .section-title {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 600;
-  color: #2c3e50;
-  margin-top: 0;
-  margin-bottom: 1rem;
+  color: #243142;
+  margin: 0;
 }
 
 .stats-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: grid;
+  gap: 0.7rem;
 }
 
 .stats-list li {
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.stats-list li:last-child {
-  border-bottom: none;
+  padding: 0.85rem 0.95rem;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid #e4ebf4;
+  color: #334155;
 }
 
 .wiki-link {
-  display: inline-block;
-  margin-bottom: 1rem;
-  color: #3498db;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  color: #2563eb;
   text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s ease-in-out;
+  font-weight: 600;
 }
 
 .wiki-link:hover {
-  color: #2980b9;
+  text-decoration: underline;
 }
 
 .wiki-content {
-  line-height: 1.6;
-  color: #555;
+  line-height: 1.7;
+  color: #475569;
 }
 
-.bird-header {
-  text-align: center;
-  /* Add flex-grow to make the header take up available space and help with centering */
-  flex-grow: 1; 
+.wiki-empty {
+  margin: 0;
+  color: #6b7280;
 }
 
-/* ... (keep all other existing CSS styles as they are) ... */
+.detail-skeleton {
+  display: grid;
+  gap: 1rem;
+}
+
+.detail-skeleton__hero {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.detail-skeleton__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: 1rem;
+}
+
+.detail-skeleton__image {
+  height: 340px;
+}
+
+.detail-skeleton__panel {
+  display: grid;
+  gap: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .detail-toolbar {
+    margin-bottom: 0.65rem;
+  }
+
+  .back-button {
+    min-height: 40px;
+    padding: 0 0.8rem;
+  }
+
+  .bird-main-content,
+  .detail-skeleton__grid {
+    grid-template-columns: 1fr;
+  }
+}

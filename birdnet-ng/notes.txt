@@ -1,6 +1,10 @@
+ng serve 
+
 ng build --configuration=production
 scp -r /Users/graeme/Projects/BirdNET-Pi/birdnet-ng/dist/birdnet-ng/* graeme@birdnet.local:/home/graeme/BirdNET-Pi/birdnet-ng/
 
+or do it all in one:
+npm run deploy:pi
 
 /home/graeme/BirdNET-Pi/birdnet-ng;
 
@@ -18,30 +22,15 @@ cd scripts
 pm2 reload server.js
 pm2 save
 
-pm2 start ~/start-ngrok.sh --name ngrok
 
 node server.js
 pm2 start your_main_script.js
 
-NOT USED
-ngrok http --domain=uniformly-worthy-monitor.ngrok-free.app 81
-nohup ngrok http --domain=uniformly-worthy-monitor.ngrok-free.app 81 > ngrok.log 2>&1 &
 
 
 USEFUL COMMANDS------
 # See processes
 pm2 status
-
-# Tail logs
-pm2 logs ngrok
-
-# Restart or stop
-pm2 restart ngrok
-pm2 stop ngrok
-pm2 delete ngrok
-
-# Update ngrok (if installed via apt)
-sudo apt-get update && sudo apt-get install -y ngrok
 
 # Update PM2 itself
 npm i -g pm2

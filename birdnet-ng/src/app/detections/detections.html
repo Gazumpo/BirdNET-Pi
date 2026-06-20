@@ -1,39 +1,170 @@
-<div>
-@if (lastDetection) {
-@if (lastDetection.Com_Name) {
-    <h3>New Bird!</h3>
-    <app-detection-detail [detection]=lastDetection [bird]="birds[lastDetection.Sci_Name]" [isNew]="true"></app-detection-detail>
-}
-<br />
-}
-</div>
-
-@if (filteredLatestDetections) {
-@if (filteredLatestDetections.length) {
-<div class="container">
-    <div class="header-container">
-        <h3>Recent Birds</h3>
-        <div class="controls-container">
-            <div class="dropdown-container">
-                <select class="control-dropdown" (change)="filterData($event)">
-                    <option value="all">All</option>
-                    <option value="birds" selected>Birds</option>
-                </select>
-            </div>
-            <div class="refresh-button" (click)="refreshData()">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#999"><path d="M160-160v-80h110l-16-14q-52-46-73-105t-21-119q0-111 66.5-197.5T400-790v84q-72 26-116 88.5T240-478q0 45 17 87.5t53 78.5l10 10v-98h80v240H160Zm400-10v-84q72-26 116-88.5T720-482q0-45-17-87.5T650-648l-10-10v98h-80v-240h240v80H690l16 14q49 49 71.5 106.5T800-482q0 111-66.5 197.5T560-170Z"/></svg>
-            </div>
-        </div>
+@if (todaySummary) {
+  <section class="summary-panel surface-card">
+    <div class="section-heading">
+      <div>
+        <h2>Today at a glance</h2>
+        <p class="summary-date">Live station summary for today in Australia/Perth</p>
+      </div>
+      <span class="live-pill" [class.live-pill--muted]="!wsConnected">Live {{ wsConnected ? 'connected' : 'reconnecting' }}</span>
     </div>
 
-    <cdk-virtual-scroll-viewport itemSize="100" class="detections-viewport">
-        @for (detect of filteredLatestDetections; track detect) {
-            @if (birds && birds[detect.Sci_Name]) {
-            <app-detection-detail [detection]=detect [bird]="birds[detect.Sci_Name]"></app-detection-detail>
-            }   
+    <div class="summary-grid">
+      <article class="summary-card">
+        <span class="summary-label">Detections today</span>
+        <strong>{{ todaySummary.detectionsToday }}</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">Species today</span>
+        <strong>{{ todaySummary.speciesToday }}</strong>
+      </article>
+      <article class="summary-card summary-card--new">
+        <span class="summary-label">New species today</span>
+        <strong>{{ todaySummary.newSpeciesToday.length }}</strong>
+        @if (todaySummary.newSpeciesToday.length > 0) {
+          <div class="bird-list bird-list--summary">
+            @for (bird of summaryBirds(todaySummary.newSpeciesToday); track bird.Sci_Name) {
+              <a class="bird-item" [routerLink]="['/species-detail', bird.Sci_Name]">
+                <img
+                  class="bird-mark"
+                  [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'"
+                  [alt]="bird.Com_Name"
+                >
+                <span class="bird-name">{{ bird.Com_Name }}</span>
+              </a>
+            }
+          </div>
         }
-    </cdk-virtual-scroll-viewport>
-    
-</div>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">Rare species today</span>
+        <strong>{{ todaySummary.rareSpeciesToday.length }}</strong>
+      </article>
+    </div>
+
+    @if (todaySummary.highlightDetection && birds[todaySummary.highlightDetection.Sci_Name]) {
+      <div class="highlight-block">
+        <p class="highlight-label">Strongest recent call</p>
+        <app-detection-detail [detection]="todaySummary.highlightDetection" [bird]="birds[todaySummary.highlightDetection.Sci_Name]"></app-detection-detail>
+      </div>
+    }
+  </section>
 }
-}
+
+<section class="container">
+  <div class="detections-sticky-controls">
+    <div class="header-container page-header">
+      <div>
+        <h2>Recent birds</h2>
+        <p class="section-subtitle">{{ filteredLatestDetections.length }} results</p>
+      </div>
+
+      <button class="refresh-button" type="button" (click)="refreshData()" aria-label="Refresh detections">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M160-160v-80h110l-16-14q-52-46-73-105t-21-119q0-111 66.5-197.5T400-790v84q-72 26-116 88.5T240-478q0 45 17 87.5t53 78.5l10 10v-98h80v240H160Zm400-10v-84q72-26 116-88.5T720-482q0-45-17-87.5T650-648l-10-10v98h-80v-240h240v80H690l16 14q49 49 71.5 106.5T800-482q0 111-66.5 197.5T560-170Z"/></svg>
+      </button>
+    </div>
+
+    <div class="filters-panel surface-card surface-card--muted" [class.filters-panel--expanded]="filtersExpanded">
+      <div class="filters-bar">
+        <button
+          class="filters-toggle"
+          type="button"
+          (click)="toggleFilters()"
+          [attr.aria-expanded]="filtersExpanded"
+          aria-controls="detection-filter-fields"
+        >
+          <svg class="filters-toggle__icon" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor" aria-hidden="true"><path d="M440-160v-240h80v80h280v80H520v80h-80Zm-280-80v-80h200v80H160Zm160-160v-80H160v-80h160v-80h80v240h-80Zm160-80v-80h320v80H480Zm120-160v-240h80v80h120v80H680v80h-80Zm-440-80v-80h360v80H160Z"/></svg>
+          <span>Filters</span>
+          @if (activeFilterCount() > 0) {
+            <span class="filter-count">{{ activeFilterCount() }}</span>
+          }
+        </button>
+
+        @if (hasActiveFilters()) {
+          <button class="filters-clear" type="button" (click)="clearFilters()">Clear</button>
+        }
+      </div>
+
+      <div class="filters-fields" id="detection-filter-fields">
+        <label class="field field--search">
+          <span>Search</span>
+          <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" placeholder="Search common or scientific name" />
+        </label>
+
+        <label class="field field--compact">
+          <span>View</span>
+          <select [(ngModel)]="viewMode" (ngModelChange)="applyFilters()">
+            <option value="birds">Latest by species</option>
+            <option value="all">All detections</option>
+          </select>
+        </label>
+
+        <label class="field field--compact">
+          <span>Rarity</span>
+          <select [(ngModel)]="rarityFilter" (ngModelChange)="applyFilters()">
+            <option value="all">All</option>
+            <option value="very-rare">Very Rare</option>
+            <option value="rare">Rare</option>
+            <option value="common">Common</option>
+            <option value="very-common">Very Common</option>
+          </select>
+        </label>
+
+        <label class="field field--compact">
+          <span>Min confidence</span>
+          <select [(ngModel)]="minConfidence" (ngModelChange)="applyFilters()">
+            <option [ngValue]="0">Any</option>
+            <option [ngValue]="0.5">50%</option>
+            <option [ngValue]="0.75">75%</option>
+            <option [ngValue]="0.9">90%</option>
+          </select>
+        </label>
+
+        @if (hasActiveFilters()) {
+          <div class="filter-actions">
+            <button class="button-secondary" type="button" (click)="clearFilters()">Clear filters</button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="detection-skeleton-list">
+      @for (item of [1, 2, 3, 4]; track item) {
+        <div class="detection-skeleton surface-card">
+          <div class="detection-skeleton__image skeleton"></div>
+          <div class="detection-skeleton__content">
+            <div class="skeleton skeleton-line skeleton-line--title"></div>
+            <div class="detection-skeleton__meta">
+              <div class="skeleton skeleton-chip"></div>
+              <div class="skeleton skeleton-chip"></div>
+              <div class="skeleton skeleton-chip"></div>
+            </div>
+            <div class="skeleton skeleton-line"></div>
+            <div class="skeleton skeleton-line skeleton-line--short"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (errorMessage) {
+    <div class="state-card state-card--error">{{ errorMessage }}</div>
+  } @else if (filteredLatestDetections.length === 0) {
+    <div class="state-card">
+      <span class="state-card__title">No detections match these filters.</span>
+      <span class="state-card__copy">Try a broader search or reset the current filters.</span>
+      @if (hasActiveFilters()) {
+        <div class="state-actions">
+          <button class="button-secondary" type="button" (click)="clearFilters()">Clear filters</button>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="detections-list">
+      @for (detect of filteredLatestDetections; track trackDetection($index, detect)) {
+        @if (birds[detect.Sci_Name]) {
+          <app-detection-detail [detection]="detect" [bird]="birds[detect.Sci_Name]"></app-detection-detail>
+        }
+      }
+    </div>
+  }
+</section>

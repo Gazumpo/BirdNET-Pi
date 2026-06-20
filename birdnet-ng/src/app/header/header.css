@@ -1,19 +1,30 @@
-  /* Header Component Styling */
 :host {
-  background-color: #2563eb; /* bg-blue-600 equivalent */
-  color: #ffffff; /* text-white equivalent */
-  padding-left: 3rem; /* p-4 equivalent */
-  padding-right: 3rem; /* p-4 equivalent */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md equivalent */
-  margin-bottom: 0rem; /* mb-4 equivalent */
+  background-color: #2563eb;
+  color: #ffffff;
+  padding-left: 3rem;
+  padding-right: 3rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+header {
+  padding: 0;
 }
 
 img {
   width: 40px;
   margin-top: 10px;
-  cursor: pointer;
 }
 
 .image-container {
   text-align: center;
+}
+
+.home-link {
+  display: inline-flex;
+  border-radius: 999px;
+}
+
+.home-link:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 4px;
 }

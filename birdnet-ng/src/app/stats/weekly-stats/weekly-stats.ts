@@ -17,6 +17,8 @@ export class WeeklyStats {
   date1!: string;
   date2!: string;
   birds: { [key: string]: BirdSpecies } = {};
+  loading = true;
+  errorMessage = '';
 
   constructor(
     private Data: Data,
@@ -29,9 +31,7 @@ export class WeeklyStats {
     if (this._date !== newDate) { // Check if the date has actually changed
       this._date = newDate;
       this.date1 = this.getLastMonday(newDate).toISOString().split('T')[0];
-      console.log(this.date1) 
       this.date2 = new Date(new Date(this.date1).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      console.log(this.date2)
       this.loadWeeksStats(); // Trigger data loading when the date changes
     }
   }
@@ -44,21 +44,26 @@ export class WeeklyStats {
   }
 
   loadWeeksStats() {
+    this.loading = true;
+    this.errorMessage = '';
     forkJoin({
       stats: this.Data.getStatsRange(this.date1, this.date2),
       birds: this.Data.getBirds()
-    }).subscribe(results => {
-      this.stats = results.stats;
-      console.log(results.stats)
-      this.birds = results.birds.reduce((acc, bird) => {
-        acc[bird.Sci_Name] = bird;
-        return acc;
-      }, {});
-      this.processStats()
-      console.log(this.stats)
-    })
-    
-
+    }).subscribe({
+      next: results => {
+        this.stats = results.stats;
+        this.birds = results.birds.reduce((acc: { [key: string]: BirdSpecies }, bird: BirdSpecies) => {
+          acc[bird.Sci_Name] = bird;
+          return acc;
+        }, {});
+        this.processStats();
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.errorMessage = 'Unable to load weekly stats.';
+      }
+    });
   }
 
   processStats() {
@@ -100,4 +105,3 @@ export class WeeklyStats {
     this.router.navigate(['/species-detail', Sci_Name]);
   }
 }
-

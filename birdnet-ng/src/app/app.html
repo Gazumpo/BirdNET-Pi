@@ -13,23 +13,21 @@
 
   @if (isHandset()) {
     <nav class="tabbar" role="tablist" aria-label="Primary">
-      <a routerLink="/detections" aria-label="Detections">
+      <a routerLink="/detections" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" aria-label="Detections">
         <span class="i"><img src="icons/detections_white.svg" alt="" aria-hidden="true" /></span><span class="t">Detections</span>
       </a>
-      <a routerLink="/daily" aria-label="Daily">
+      <a routerLink="/daily" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" aria-label="Daily">
         <span class="i"><img src="icons/daily_white.svg" alt="" aria-hidden="true" /></span><span class="t">Daily</span>
       </a>
-      <a routerLink="/weekly" aria-label="Weekly">
+      <a routerLink="/weekly" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" aria-label="Weekly">
         <span class="i"><img src="icons/weekly_white.svg" alt="" aria-hidden="true" /></span><span class="t">Weekly</span>
       </a>
-      <a routerLink="/alltime" aria-label="All">
+      <a routerLink="/alltime" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" aria-label="All">
         <span class="i"><img src="icons/all_white.svg" alt="" aria-hidden="true" /></span><span class="t">All</span>
       </a>
-      <a routerLink="/species" aria-label="Species">
+      <a routerLink="/species" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" aria-label="Species">
         <span class="i"><img src="icons/birds_white.svg" alt="" aria-hidden="true" /></span><span class="t">Species</span>
       </a>
     </nav>
   }
-
-  <app-detection-overlay />
 </div>

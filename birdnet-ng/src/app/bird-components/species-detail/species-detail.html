@@ -1,18 +1,43 @@
-<div class="bird-detail-container">
-  @if (bird) {
+<div class="bird-detail-container page-shell">
+  @if (loading) {
+    <div class="detail-skeleton">
+      <div class="surface-card detail-skeleton__hero">
+        <div class="skeleton skeleton-line skeleton-line--title"></div>
+        <div class="skeleton skeleton-line skeleton-line--short"></div>
+      </div>
+      <div class="detail-skeleton__grid">
+        <div class="surface-card">
+          <div class="detail-skeleton__image skeleton"></div>
+        </div>
+        <div class="surface-card detail-skeleton__panel">
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line skeleton-line--short"></div>
+        </div>
+      </div>
+    </div>
+  } @else if (errorMessage) {
+    <div class="state-card state-card--error">{{ errorMessage }}</div>
+  } @else if (bird) {
+    <div class="detail-toolbar">
+      <button class="back-button" type="button" (click)="goBack()">
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>
+        <span>Back</span>
+      </button>
+    </div>
+
     <header class="bird-header">
       <h1 class="bird-common-name">{{ bird.Com_Name }}</h1>
       <p class="bird-sci-name"><em>{{ bird.Sci_Name }}</em></p>
     </header>
     <div class="bird-main-content">
       <div class="image-and-audio-section">
-        <div class="bird-image-container">
+        <div class="bird-image-container surface-card">
           <img [src]="bird.imageUrl" [alt]="bird.Com_Name" class="bird-image" />
         </div>
         
-        <div class="audio-detections">
+        <div class="audio-detections surface-card surface-card--muted">
           <h4>Detections</h4>
-          <hr />
           @if (latest) {
             @if (latest.length > 0) {
               <div class="detection-item">
@@ -25,6 +50,7 @@
             }
             @if (latest.length > 1) {
               <div class="detection-item">
+                <span class="detection-label">Previous:</span>
                 <span class="detection-info">
                   {{ latest[1].Date | date:'longDate' }} {{ latest[1].Time }} (Confidence: {{latest[1].Confidence | percent: '1.0-0'}})
                 </span>
@@ -34,7 +60,6 @@
           }
           
           @if (best) {
-            <hr />
             <div class="detection-item">
               <span class="detection-label">Best:</span>
               <span class="detection-info">
@@ -46,7 +71,7 @@
         </div>
       </div>
 
-      <div class="bird-stats-section">
+      <div class="bird-stats-section surface-card">
         <h3 class="section-title">Bird Statistics</h3>
         <ul class="stats-list">
           <li><strong>Detections:</strong> {{ bird.numberDetections }}</li>
@@ -58,13 +83,15 @@
 
       <app-bar-species [detectionDatesCount]=bird.detectionDatesCount/>
 
-      <div class="bird-description-section">
+      <div class="bird-description-section surface-card">
         <h3 class="section-title">About This Bird</h3>
         @if (wikiUrl) {
           <a [href]="wikiUrl" target="_blank" class="wiki-link">Read more on Wikipedia</a>
         }
         @if (birdDescription) {
           <div class="wiki-content" [innerHTML]="birdDescription | wikipediaText"></div>
+        } @else {
+          <p class="wiki-empty">No reference text available for this species yet.</p>
         }
       </div>
     </div>

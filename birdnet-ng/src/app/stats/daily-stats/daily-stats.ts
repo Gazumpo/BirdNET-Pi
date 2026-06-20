@@ -15,6 +15,8 @@ export class DailyStats {
   stats: any;
   private _date!: string;
   birds: { [key: string]: BirdSpecies } = {};
+  loading = true;
+  errorMessage = '';
 
   constructor(
     private Data: Data,
@@ -38,17 +40,25 @@ export class DailyStats {
   }
 
   loadDaysStats() {
+    this.loading = true;
+    this.errorMessage = '';
     forkJoin({
       stats: this.Data.getStatsDay(this.date),
       birds: this.Data.getBirds()
-    }).subscribe(results => {
-      console.log(results)
-      this.stats = results.stats;
-      this.birds = results.birds.reduce((acc, bird) => {
-        acc[bird.Sci_Name] = bird;
-        return acc;
-      }, {});
-      this.processStats();
+    }).subscribe({
+      next: results => {
+        this.stats = results.stats;
+        this.birds = results.birds.reduce((acc: { [key: string]: BirdSpecies }, bird: BirdSpecies) => {
+          acc[bird.Sci_Name] = bird;
+          return acc;
+        }, {});
+        this.processStats();
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.errorMessage = 'Unable to load daily stats.';
+      }
     });
   }
 

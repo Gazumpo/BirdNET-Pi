@@ -1,23 +1,32 @@
-<div class="date-picker-container">
-  <div class="date-picker-navigation">
-    <button (click)="previousDay()" class="nav-button prev-button">
-      <span class="arrow">&lt;</span>
-    </button>
-    <form #dateForm="ngForm">
-      <input type="date"
-             id="simple-date"
-             class="date-input"
-             [(ngModel)]="date"
-             (ngModelChange)="onDateChange()"
-             name="date">
-    </form>
-    <button (click)="nextDay()" class="nav-button next-button">
-      <span class="arrow">&gt;</span>
-    </button>
-    <button (click)="today()" class="today-button">Today</button>
-  </div>
-</div>
+<section class="page-shell page-shell--narrow daily-shell">
+  <div class="date-picker-container surface-card surface-card--muted">
+    <div class="page-header date-picker-header">
+      <div>
+        <h2>Daily view</h2>
+        <p class="page-subtitle">Select a station day in Australia/Perth.</p>
+      </div>
+    </div>
 
-<app-daily-stats [date]=date/>
-<app-scatter [date]=date/>
-<app-bar-daily [date]=date/>
+    <div class="date-picker-navigation">
+      <button (click)="previousDay()" class="nav-button prev-button" type="button" aria-label="Previous day">
+        <span class="arrow">&lt;</span>
+      </button>
+      <form #dateForm="ngForm">
+        <input type="date"
+               id="simple-date"
+               class="date-input"
+               [(ngModel)]="date"
+               (ngModelChange)="onDateChange()"
+               name="date">
+      </form>
+      <button (click)="nextDay()" class="nav-button next-button" type="button" aria-label="Next day">
+        <span class="arrow">&gt;</span>
+      </button>
+      <button (click)="today()" class="today-button" type="button">Today</button>
+    </div>
+  </div>
+
+  <app-daily-stats [date]=date/>
+  <app-scatter [date]=date/>
+  <app-bar-daily [date]=date/>
+</section>

@@ -1,91 +1,107 @@
-<div class="date-container">
-  <p>Week {{ date1 | date:'longDate'}} to {{ date2 | date:'longDate'}} </p>
-</div>
-<div class="grid-container">
-  <div class="grid-item">
-    <h2>Detections</h2>
-    @if (stats) {
-    <p class="stat-number">{{ stats.numberDetections }}</p>
-    }
+<section class="stats-shell page-shell">
+  <div class="page-header">
+    <div>
+      <h2>Weekly stats</h2>
+      <p class="page-subtitle">Week {{ date1 | date:'longDate'}} to {{ date2 | date:'longDate' }}</p>
+    </div>
   </div>
-  <div class="grid-item">
-    <h2>Species</h2>
-    @if (stats) {
-    <p class="stat-number">{{ stats.numberSpecies }}</p>
-    }
-  </div>
-  <div class="grid-item">
-    <h2>Most Common Species</h2>
-    @if (stats) {
-        @if (stats.birds.length > 0) {
-            <div class="bird-item" (click)="goToBirdDetail(stats.birds[0].Sci_Name)">
-                <img class="bird-mark" [src]="'birds/' + stats.birds[0].Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ stats.birds[0].Com_Name }}">
-                <p class="bird-name">{{ stats.birds[0].Com_Name }}</p>
-            </div>
-        } @else {
-            <p class="stat-number">0</p>
-        }
-    }
-  </div>
-  <div class="grid-item">
-    <h2>Very Common Species</h2>
-    @if (stats) {
-        @if (stats.veryCommonSpecies?.length > 0) {
-            @for (bird of stats.veryCommonSpecies; track bird.Sci_Name) {
-              <div class="bird-item" (click)="goToBirdDetail(bird.Sci_Name)">
-                  <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
-                  <p class="bird-name">{{ bird.Com_Name }}</p>
-              </div>
-            }
-        } @else {
-            <p class="stat-number">0</p>
-        }
-    }
-  </div>
-  <div class="grid-item">
-    <h2>Common Species</h2>
-    @if (stats) {
-        @if (stats.commonSpecies?.length > 0) {
-            @for (bird of stats.commonSpecies; track bird.Sci_Name) {
-              <div class="bird-item" (click)="goToBirdDetail(bird.Sci_Name)">
-                  <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
-                  <p class="bird-name">{{ bird.Com_Name }}</p>
-              </div>
-            }
-        } @else {
-            <p class="stat-number">0</p>
-        }
-    }
-  </div>
-  <div class="grid-item">
-    <h2>Rare Species</h2>
-    @if (stats) {
-        @if (stats.rareSpecies?.length > 0) {
-            @for (bird of stats.rareSpecies; track bird.Sci_Name) {
-              <div class="bird-item" (click)="goToBirdDetail(bird.Sci_Name)">
-                  <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
-                  <p class="bird-name">{{ bird.Com_Name }}</p>
-              </div>
-            }
-        } @else {
-            <p class="stat-number">0</p>
-        }
-    }
-  </div>
-  <div class="grid-item">
-    <h2>Very Rare Species</h2>
-    @if (stats) {
-        @if (stats.veryRareSpecies?.length > 0) {
-            @for (bird of stats.veryRareSpecies; track bird.Sci_Name) {
-              <div class="bird-item" (click)="goToBirdDetail(bird.Sci_Name)">
-                  <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
-                  <p class="bird-name">{{ bird.Com_Name }}</p>
-              </div>
-            }
-        } @else {
-            <p class="stat-number">0</p>
-        }
-    }
-  </div>
-</div>
 
+  @if (loading) {
+    <div class="stats-grid">
+      @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+        <div class="stat-card surface-card">
+          <div class="skeleton skeleton-line skeleton-line--short"></div>
+          <div class="skeleton stat-skeleton__value"></div>
+          <div class="stat-skeleton__list">
+            <div class="skeleton skeleton-line"></div>
+            <div class="skeleton skeleton-line skeleton-line--short"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (errorMessage) {
+    <div class="state-card state-card--error">{{ errorMessage }}</div>
+  } @else if (stats) {
+    <div class="stats-grid">
+      <div class="stat-card surface-card">
+        <h3>Detections</h3>
+        <p class="stat-number">{{ stats.numberDetections }}</p>
+      </div>
+      <div class="stat-card surface-card">
+        <h3>Species</h3>
+        <p class="stat-number">{{ stats.numberSpecies }}</p>
+      </div>
+      <div class="stat-card surface-card">
+        <h3>Most common species</h3>
+        @if (stats.birds.length > 0) {
+          <button class="bird-item" type="button" (click)="goToBirdDetail(stats.birds[0].Sci_Name)">
+            <img class="bird-mark" [src]="'birds/' + stats.birds[0].Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ stats.birds[0].Com_Name }}">
+            <span class="bird-name">{{ stats.birds[0].Com_Name }}</span>
+          </button>
+        } @else {
+          <p class="stat-empty">None recorded</p>
+        }
+      </div>
+      <div class="stat-card surface-card">
+        <h3>Very common species</h3>
+        @if (stats.veryCommonSpecies?.length > 0) {
+          <div class="bird-list">
+            @for (bird of stats.veryCommonSpecies; track bird.Sci_Name) {
+              <button class="bird-item" type="button" (click)="goToBirdDetail(bird.Sci_Name)">
+                <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
+                <span class="bird-name">{{ bird.Com_Name }}</span>
+              </button>
+            }
+          </div>
+        } @else {
+          <p class="stat-empty">None this week</p>
+        }
+      </div>
+      <div class="stat-card surface-card">
+        <h3>Common species</h3>
+        @if (stats.commonSpecies?.length > 0) {
+          <div class="bird-list">
+            @for (bird of stats.commonSpecies; track bird.Sci_Name) {
+              <button class="bird-item" type="button" (click)="goToBirdDetail(bird.Sci_Name)">
+                <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
+                <span class="bird-name">{{ bird.Com_Name }}</span>
+              </button>
+            }
+          </div>
+        } @else {
+          <p class="stat-empty">None this week</p>
+        }
+      </div>
+      <div class="stat-card surface-card">
+        <h3>Rare species</h3>
+        @if (stats.rareSpecies?.length > 0) {
+          <div class="bird-list">
+            @for (bird of stats.rareSpecies; track bird.Sci_Name) {
+              <button class="bird-item" type="button" (click)="goToBirdDetail(bird.Sci_Name)">
+                <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
+                <span class="bird-name">{{ bird.Com_Name }}</span>
+              </button>
+            }
+          </div>
+        } @else {
+          <p class="stat-empty">None this week</p>
+        }
+      </div>
+      <div class="stat-card surface-card">
+        <h3>Very rare species</h3>
+        @if (stats.veryRareSpecies?.length > 0) {
+          <div class="bird-list">
+            @for (bird of stats.veryRareSpecies; track bird.Sci_Name) {
+              <button class="bird-item" type="button" (click)="goToBirdDetail(bird.Sci_Name)">
+                <img class="bird-mark" [src]="'birds/' + bird.Sci_Name.replace(' ', '_') + '_mark.png'" alt="{{ bird.Com_Name }}">
+                <span class="bird-name">{{ bird.Com_Name }}</span>
+              </button>
+            }
+          </div>
+        } @else {
+          <p class="stat-empty">None this week</p>
+        }
+      </div>
+    </div>
+  }
+</section>

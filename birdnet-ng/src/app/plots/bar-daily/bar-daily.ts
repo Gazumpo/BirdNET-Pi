@@ -1,7 +1,13 @@
-import { Component, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import Plotly from 'plotly.js-dist-min';
 import { BirdDetection } from '../../models/bird-detection.model';
 import { Data } from '../../services/data';
+
+interface SpeciesCountItem {
+  name: string;
+  sciName: string;
+  count: number;
+}
 
 @Component({
   selector: 'app-bar-daily',
@@ -12,22 +18,33 @@ import { Data } from '../../services/data';
 export class BarDaily {
   todayBirds: BirdDetection[] = [];
   plotData: Plotly.Data[] = [];
+  summaryItems: Array<{ label: string; value: string }> = [];
+  chartAriaLabel = 'Daily species activity chart';
+  loading = true;
+  errorMessage = '';
+  hasData = false;
+  isCompactLayout = false;
+
   private _date!: string;
+  private plotEventsBound = false;
+  private speciesCounts: SpeciesCountItem[] = [];
+  private plotHost?: ElementRef<HTMLDivElement>;
 
-  @ViewChild('mainPlotBar', { static: true }) mainPlotBar!: ElementRef;
+  @ViewChild('mainPlotBar')
+  set mainPlotBarRef(ref: ElementRef<HTMLDivElement> | undefined) {
+    this.plotHost = ref;
+    if (ref && this.hasData) {
+      queueMicrotask(() => this.buildChart());
+    }
+  }
 
+  constructor(private data: Data) {}
 
-  constructor(
-    private Data: Data
-  ) {}
-
-  // Create an @Input() setter for the date property
   @Input()
   set date(newDate: string) {
-    if (this._date !== newDate) { // Check if the date has actually changed
+    if (this._date !== newDate) {
       this._date = newDate;
-      this.plotData = [];
-      this.loadDaysBirds(); // Trigger data loading when the date changes
+      this.loadDaysBirds();
     }
   }
 
@@ -35,101 +52,204 @@ export class BarDaily {
     return this._date;
   }
 
-  ngOnInit() {
-    //setting the date will do first plot
-  }
+  private loadDaysBirds() {
+    this.loading = true;
+    this.errorMessage = '';
 
-  loadDaysBirds() {
-    this.Data.getDay(this.date).subscribe(todayBirds => {
-      this.todayBirds = todayBirds;
-      this.createPlotData();
-      this.initialisePlot();
-      this.setPlotEvents();
+    this.data.getDay(this.date).subscribe({
+      next: todayBirds => {
+        this.todayBirds = todayBirds;
+        this.loading = false;
+        queueMicrotask(() => this.buildChart());
+      },
+      error: () => {
+        this.errorMessage = 'Unable to load the daily species chart.';
+        this.loading = false;
+        this.hasData = false;
+      }
     });
   }
 
-  ngAfterViewInit() {
-    this.initialisePlot();
-  }
+  private buildChart() {
+    const grouped = this.countSpecies(this.todayBirds);
+    this.speciesCounts = grouped;
+    this.hasData = grouped.length > 0;
+    this.summaryItems = this.buildSummary(grouped);
 
-  setPlotEvents() {
-    // Assuming 'myDiv' is the ID of your Plotly plot container
-    this.mainPlotBar.nativeElement.on('plotly_hover', (data: any) => {
-        console.log(data)
-        if (data.points.length > 0){
-            let point = data.points[0]
-            let sciName = point.data.name
-            let imgUrl = "birds/" + sciName.replace(" ", "_") + ".jpg"
-
-            console.log(data.event.x, data.event.y)
-            let image: Partial<Plotly.Image> = {
-                source: imgUrl,
-                x: 1,
-                y: 1,
-                sizex: 1, // Adjust size as needed
-                sizey: 1,
-                xanchor: "right",
-                yanchor: "top",
-                xref: "paper",
-                yref: "paper"
-
-            };
-
-            Plotly.relayout(this.mainPlotBar.nativeElement, {
-                images: [image]
-            });
-          }
-        })
-
-    this.mainPlotBar.nativeElement.on('plotly_unhover', (data: any) => {
-        // Clear the image when unhovering
-        Plotly.relayout(this.mainPlotBar.nativeElement, { images: [] });
-    });
-  };
-
-  createPlotData() {
-    const uniqueBirds = [...new Set(this.todayBirds.map(bird => bird.Com_Name))];
-    console.log('Unique Birds', uniqueBirds)
-
-    let birdSightings: { [key: string]: number } = {}
-    for (const uniqueBird of uniqueBirds) {
-      const birdDetections = this.todayBirds.filter(bird => bird.Com_Name === uniqueBird).length;
-      birdSightings[uniqueBird] = birdDetections;
+    const plotHost = this.plotHost;
+    if (!plotHost) {
+      return;
     }
 
-    const sortedBirdSightings = Object.entries(birdSightings).sort(([, countA], [, countB]) => countB - countA);
-    birdSightings = Object.fromEntries(sortedBirdSightings);
+    if (!this.hasData) {
+      this.plotData = [];
+      Plotly.purge(plotHost.nativeElement);
+      return;
+    }
 
-    this.plotData.push({
-      type: 'bar',
-      x: Object.keys(birdSightings),
-      y: Object.values(birdSightings),
-    })
+    this.isCompactLayout = window.innerWidth <= 768;
+    const displayItems = this.isCompactLayout ? grouped.slice(0, 8) : grouped;
+
+    this.plotData = [this.createTrace(displayItems)];
+    this.chartAriaLabel = this.buildAriaLabel(grouped);
+    this.initialisePlot();
+    this.setPlotEvents();
   }
 
-  initialisePlot() {
-    const layout: Partial<Plotly.Layout> = {
-      showlegend: false,
-      margin: {
-        l: 50,
-        t: 15,
-        b: 100
+  private countSpecies(detections: BirdDetection[]): SpeciesCountItem[] {
+    const grouped = detections.reduce((acc, detection) => {
+      const current = acc.get(detection.Com_Name);
+      acc.set(detection.Com_Name, {
+        name: detection.Com_Name,
+        sciName: detection.Sci_Name,
+        count: (current?.count ?? 0) + 1
+      });
+      return acc;
+    }, new Map<string, SpeciesCountItem>());
+
+    return Array.from(grouped.values()).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  }
+
+  private createTrace(items: SpeciesCountItem[]): Plotly.Data {
+    if (this.isCompactLayout) {
+      return {
+        type: 'bar',
+        orientation: 'h',
+        x: items.map(item => item.count),
+        y: items.map(item => this.shortLabel(item.name, 22)),
+        customdata: items.map(item => item.name),
+        marker: {
+          color: '#3b82f6'
+        },
+        hovertemplate: '%{customdata}: %{x} detections<extra></extra>'
+      };
+    }
+
+    return {
+      type: 'bar',
+      x: items.map(item => this.shortLabel(item.name, 18)),
+      y: items.map(item => item.count),
+      customdata: items.map(item => item.name),
+      marker: {
+        color: '#3b82f6'
       },
-      xaxis: {
-        fixedrange: true
-      },
-      yaxis: {
-        fixedrange: true
-      }
+      hovertemplate: '%{customdata}: %{y} detections<extra></extra>'
     };
+  }
+
+  private initialisePlot() {
+    const plotHost = this.plotHost;
+    if (!plotHost) {
+      return;
+    }
+
+    const layout: Partial<Plotly.Layout> = this.isCompactLayout
+      ? {
+          showlegend: false,
+          margin: { l: 126, r: 18, t: 8, b: 36 },
+          xaxis: {
+            fixedrange: true,
+            tickfont: { size: 11 },
+            title: { text: 'Detections' }
+          },
+          yaxis: {
+            fixedrange: true,
+            autorange: 'reversed',
+            tickfont: { size: 11 },
+            automargin: true
+          }
+        }
+      : {
+          showlegend: false,
+          margin: { l: 52, r: 16, t: 8, b: 120 },
+          xaxis: {
+            fixedrange: true,
+            tickangle: -28,
+            tickfont: { size: 11 },
+            automargin: true
+          },
+          yaxis: {
+            fixedrange: true,
+            tickfont: { size: 11 },
+            title: { text: 'Detections' }
+          }
+        };
 
     const config: Partial<Plotly.Config> = {
       responsive: true,
       displayModeBar: false,
       displaylogo: false,
-      scrollZoom: false // Disables zoom with mouse wheel
+      scrollZoom: false
     };
 
-    Plotly.newPlot(this.mainPlotBar.nativeElement, this.plotData, layout, config);
+    Plotly.react(plotHost.nativeElement, this.plotData, layout, config);
+  }
+
+  private setPlotEvents() {
+    if (this.plotEventsBound) {
+      return;
+    }
+
+    const plotElement = this.plotHost?.nativeElement as any;
+    if (!plotElement) {
+      return;
+    }
+
+    plotElement.on('plotly_hover', (data: any) => {
+      if (!data.points?.length) {
+        return;
+      }
+
+      const hoveredName = data.points[0].customdata as string;
+      const hoveredItem = this.speciesCounts.find(item => item.name === hoveredName);
+      if (!hoveredItem) {
+        return;
+      }
+
+      const image: Partial<Plotly.Image> = {
+        source: `birds/${this.toAssetName(hoveredItem.sciName)}.jpg`,
+        x: 1,
+        y: 1,
+        sizex: 0.92,
+        sizey: 0.92,
+        xanchor: 'right',
+        yanchor: 'top',
+        xref: 'paper',
+        yref: 'paper'
+      };
+
+      Plotly.relayout(this.plotHost!.nativeElement, { images: [image] });
+    });
+
+    plotElement.on('plotly_unhover', () => {
+      Plotly.relayout(this.plotHost!.nativeElement, { images: [] });
+    });
+
+    this.plotEventsBound = true;
+  }
+
+  private buildSummary(items: SpeciesCountItem[]) {
+    if (items.length === 0) {
+      return [];
+    }
+
+    const topThree = items.slice(0, 3).map(item => `${item.name} (${item.count})`).join(', ');
+    return [
+      { label: 'Species', value: String(items.length) },
+      { label: 'Top birds', value: topThree }
+    ];
+  }
+
+  private buildAriaLabel(items: SpeciesCountItem[]) {
+    const leaders = items.slice(0, 3).map(item => `${item.name} with ${item.count}`).join(', ');
+    return `Daily species activity chart. ${items.length} species detected. Most active birds: ${leaders}.`;
+  }
+
+  private shortLabel(label: string, maxLength: number) {
+    return label.length > maxLength ? `${label.slice(0, maxLength - 1)}…` : label;
+  }
+
+  private toAssetName(value: string) {
+    return value.replace(/ /g, '_');
   }
 }

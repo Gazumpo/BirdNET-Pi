@@ -1,118 +1,130 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { forkJoin, of, Subject, Subscription } from 'rxjs';
+import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { Data } from '../services/data';
 import { BirdDetection } from '../models/bird-detection.model';
 import { BirdSpecies } from '../models/bird-species';
 import { Ws } from '../services/ws';
 import { DetectionDetail } from '../bird-components/detection-detail/detection-detail';
 import { DetectionNotifications } from '../services/detection-notifications';
-import { switchMap, catchError, takeUntil } from 'rxjs/operators';
-import { forkJoin, of, Subject, Subscription } from 'rxjs';
-import { ScrollingModule } from '@angular/cdk/scrolling';
 import { Sunrise } from '../services/sunrise';
+import { stationToday } from '../utils/station-time';
 
+interface BirdSummaryItem {
+  Sci_Name: string;
+  Com_Name: string;
+  rarity?: string;
+}
+
+interface TodaySummary {
+  detectionsToday: number;
+  speciesToday: number;
+  newSpeciesToday: BirdSummaryItem[];
+  rareSpeciesToday: BirdSummaryItem[];
+  highlightDetection: BirdDetection | null;
+}
 
 @Component({
   selector: 'app-home',
-  imports: [DetectionDetail, ScrollingModule],
+  imports: [DetectionDetail, FormsModule, RouterLink],
   templateUrl: './detections.html',
   styleUrl: './detections.css'
 })
-export class Detections {
-  latestDetections!: BirdDetection[];  // all detections taken from db
-  filteredLatestDetections!: BirdDetection[];  // filtered based on dropdown
-  lastDetection!: BirdDetection | null;
+export class Detections implements OnInit, OnDestroy {
+  latestDetections: BirdDetection[] = [];
+  filteredLatestDetections: BirdDetection[] = [];
   sunrise: any;
+  todaySummary: TodaySummary | null = null;
 
   birds: { [key: string]: BirdSpecies } = {};
-  filter: string = 'birds';
+  viewMode = 'birds';
+  rarityFilter = 'all';
+  minConfidence = 0;
+  searchTerm = '';
+  filtersExpanded = false;
+
+  loading = true;
+  errorMessage = '';
+  wsConnected = false;
 
   private destroy$ = new Subject<void>();
   private wsSubscription: Subscription | null = null;
   private reconnectAttemptCount = 0;
-  private readonly MAX_RECONNECT_ATTEMPTS = 5;
-  private readonly RECONNECT_DELAY = 5000; // 5 seconds
-  private readonly NUMBER_DETECTIONS_REQUEST = 150;
+  private readonly maxReconnectAttempts = 5;
+  private readonly reconnectDelay = 5000;
+  private readonly numberDetectionsRequest = 150;
+  private readonly visibilityHandler = () => {
+    if (document.visibilityState === 'visible') {
+      this.reconnectWebSocket();
+    }
+  };
 
   constructor(
-    private Data: Data,
-    private Ws: Ws,
-    private Sunrise: Sunrise,
+    private data: Data,
+    private ws: Ws,
+    private sunriseService: Sunrise,
     private detectionNotifications: DetectionNotifications
   ) {}
-  
+
   ngOnInit(): void {
     this.initialiseData();
+    this.ws.connectionStatus$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(status => {
+        this.wsConnected = status;
+      });
     this.connectWebSocket();
-
-    // Add an event listener for visibility change
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        console.log('App is now visible. Checking WebSocket...');
-        this.reconnectWebSocket();
-      }
-    });
+    document.addEventListener('visibilitychange', this.visibilityHandler);
   }
 
   private connectWebSocket(): void {
     if (this.wsSubscription && !this.wsSubscription.closed) {
-      console.log('WebSocket subscription is already active.');
       return;
     }
 
-    console.log('Connecting to WebSocket...');
     this.wsSubscription = this.detectionNotifications.latestDetection$.pipe(
       takeUntil(this.destroy$),
       switchMap(detection => {
-        console.log('Detected New Bird: ', detection);
-        this.lastDetection = detection;
-        setTimeout(() => { this.lastDetection = null; }, 60000);
         return forkJoin({
-          birdsData: this.Data.getBirds(),
-          latestDetectionsData: this.Data.getLatest(this.NUMBER_DETECTIONS_REQUEST)
+          latestDetectionsData: this.data.getLatest(this.numberDetectionsRequest),
+          stats: this.data.getStatsDay(stationToday())
         });
       }),
       catchError(error => {
-        console.error('WebSocket error:', error);
         this.handleWsError();
-        return of(null);
+        return of({ latestDetectionsData: this.latestDetections, stats: null });
       })
-    ).subscribe(results => {
-      if (results) {
-        this.birds = results.birdsData.reduce((acc: { [key: string]: BirdSpecies }, bird: BirdSpecies) => {
-          acc[bird.Sci_Name] = bird;
-          return acc;
-        }, {});
-        this.latestDetections = results.latestDetectionsData;
-        this.latestDetections = this.addTimeTypes(results.latestDetectionsData)
-        this.filteredLatestDetections = this.filterDetections(results.latestDetectionsData);
-        this.reconnectAttemptCount = 0; // Reset counter on successful message
-      }
-    }, error => {
-      // This is for errors that terminate the observable
-      console.error('WebSocket stream terminated with error:', error);
-      this.handleWsError();
+    ).subscribe({
+      next: results => {
+        this.applyLatestDetections(results.latestDetectionsData);
+        if (results.stats) {
+          this.todaySummary = this.buildTodaySummary(results.stats);
+        }
+        this.reconnectAttemptCount = 0;
+      },
+      error: () => this.handleWsError()
     });
   }
 
   private reconnectWebSocket(): void {
-    if (this.Ws.ws && this.Ws.ws.readyState === WebSocket.OPEN) {
-      console.log('WebSocket is already open.');
+    if (this.ws.ws && this.ws.ws.readyState === WebSocket.OPEN) {
       this.reconnectAttemptCount = 0;
       return;
     }
-    
-    if (this.reconnectAttemptCount < this.MAX_RECONNECT_ATTEMPTS) {
-      console.log(`Attempting to reconnect... Attempt #${this.reconnectAttemptCount + 1}`);
+
+    if (this.reconnectAttemptCount < this.maxReconnectAttempts) {
       this.reconnectAttemptCount++;
       setTimeout(() => {
+        this.ws.reconnect();
         this.connectWebSocket();
-      }, this.RECONNECT_DELAY * this.reconnectAttemptCount); // Exponential backoff-like delay
-    } else {
-      console.error('Max reconnection attempts reached. Giving up.');
+      }, this.reconnectDelay * this.reconnectAttemptCount);
     }
   }
 
   private handleWsError(): void {
+    this.wsConnected = false;
     if (this.wsSubscription) {
       this.wsSubscription.unsubscribe();
       this.wsSubscription = null;
@@ -125,79 +137,150 @@ export class Detections {
     this.reconnectWebSocket();
   }
 
-  filterData(event: Event) {
-    const selectedValue = (event.target as HTMLSelectElement).value;
-    console.log(selectedValue)
-    this.filter = selectedValue
-    
-    this.filteredLatestDetections = this.filterDetections(this.latestDetections)
-  }
-
   initialiseData() {
-    console.log("loading all data")
+    this.loading = true;
+    this.errorMessage = '';
+
     forkJoin({
-      birdsData: this.Data.getBirds(),
-      latestDetectionsData: this.Data.getLatest(this.NUMBER_DETECTIONS_REQUEST),
-      sunrise: this.Sunrise.getSunrise(new Date().toLocaleDateString("en-CA", { timeZone: "Australia/Perth" }).slice(0, 10))
+      birdsData: this.data.getBirds(),
+      latestDetectionsData: this.data.getLatest(this.numberDetectionsRequest),
+      sunrise: this.sunriseService.getSunrise(stationToday()),
+      stats: this.data.getStatsDay(stationToday())
     }).pipe(
       takeUntil(this.destroy$)
-    ).subscribe(results => {
-      this.birds = results.birdsData.reduce((acc: { [key: string]: BirdSpecies }, bird: BirdSpecies) => {
-        acc[bird.Sci_Name] = bird;
-        return acc;
-      }, {});
-      this.latestDetections = results.latestDetectionsData;
-      this.sunrise = results.sunrise;
-
-      this.latestDetections = this.addTimeTypes(results.latestDetectionsData)
-      this.filteredLatestDetections = this.filterDetections(results.latestDetectionsData);
-      console.log('Initial data loaded: birds', this.birds, 'latestBirds', this.latestDetections);
+    ).subscribe({
+      next: results => {
+        this.birds = results.birdsData.reduce((acc: { [key: string]: BirdSpecies }, bird: BirdSpecies) => {
+          acc[bird.Sci_Name] = bird;
+          return acc;
+        }, {});
+        this.sunrise = results.sunrise;
+        this.applyLatestDetections(results.latestDetectionsData);
+        this.todaySummary = this.buildTodaySummary(results.stats);
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.errorMessage = 'Unable to load detections right now.';
+      }
     });
   }
 
-  addTimeTypes(detections: BirdDetection[]) {
+  private applyLatestDetections(detections: BirdDetection[]) {
+    this.latestDetections = this.addTimeTypes(detections);
+    this.applyFilters();
+  }
+
+  private addTimeTypes(detections: BirdDetection[]) {
+    if (!this.sunrise?.results) {
+      return detections;
+    }
+
     return detections.map(detection => {
-      detection.timeType = this.Sunrise.returnTimeType(this.sunrise.results, detection.Time);
-      detection.timeTypeIcon = "/sun/" + detection.timeType + ".png"
+      detection.timeType = this.sunriseService.returnTimeType(this.sunrise.results, detection.Time);
+      detection.timeTypeIcon = '/sun/' + detection.timeType + '.png';
       return detection;
     });
   }
 
-  filterDetections(detections: BirdDetection[]) {
-    let filteredDetections;
-    if (this.filter === '') {
-      filteredDetections = detections
-    } else if (this.filter === 'birds') {
-      const seenBirds = new Set<string>();
-      filteredDetections = detections.filter(detection => {
-        if (!seenBirds.has(detection.Sci_Name)) {
-          seenBirds.add(detection.Sci_Name);
-          return true;
-        }
-        return false;
-      });
-    } else {
-      filteredDetections = detections
-    }
+  private buildTodaySummary(stats: any): TodaySummary {
+    const rareSpeciesToday = stats.speciesToday
+      .map((sciName: string) => this.birds[sciName])
+      .filter((bird: BirdSpecies | undefined) => bird && (bird.rarity === 'Rare' || bird.rarity === 'Very Rare'))
+      .map((bird: BirdSpecies) => ({
+        Sci_Name: bird.Sci_Name,
+        Com_Name: bird.Com_Name,
+        rarity: bird.rarity
+      }));
 
-    return filteredDetections;
+    const newSpeciesToday = stats.newSpeciesToday.map((bird: any) => {
+      const existingBird = this.birds[bird.Sci_Name];
+      return {
+        Sci_Name: bird.Sci_Name,
+        Com_Name: bird.Com_Name,
+        rarity: existingBird?.rarity
+      };
+    });
+
+    const highlightDetection = this.latestDetections
+      .filter(detection => detection.Date === stationToday())
+      .sort((a, b) => b.Confidence - a.Confidence)[0] ?? null;
+
+    return {
+      detectionsToday: stats.numberDetectionsToday,
+      speciesToday: stats.numberSpeciesToday,
+      newSpeciesToday,
+      rareSpeciesToday,
+      highlightDetection
+    };
+  }
+
+  applyFilters() {
+    const normalizedTerm = this.searchTerm.trim().toLowerCase();
+    const seenBirds = new Set<string>();
+
+    this.filteredLatestDetections = this.latestDetections.filter(detection => {
+      const bird = this.birds[detection.Sci_Name];
+      const rarity = bird?.rarity ?? '';
+      const matchesSearch = normalizedTerm === ''
+        || detection.Com_Name.toLowerCase().includes(normalizedTerm)
+        || detection.Sci_Name.toLowerCase().includes(normalizedTerm);
+      const matchesRarity = this.rarityFilter === 'all'
+        || rarity.toLowerCase().replace(' ', '-') === this.rarityFilter;
+      const matchesConfidence = detection.Confidence >= this.minConfidence;
+      const matchesView = this.viewMode !== 'birds' || !seenBirds.has(detection.Sci_Name);
+
+      if (this.viewMode === 'birds' && matchesSearch && matchesRarity && matchesConfidence && matchesView) {
+        seenBirds.add(detection.Sci_Name);
+      }
+
+      return matchesSearch && matchesRarity && matchesConfidence && matchesView;
+    });
+  }
+
+  hasActiveFilters() {
+    return this.searchTerm.trim() !== ''
+      || this.viewMode !== 'birds'
+      || this.rarityFilter !== 'all'
+      || this.minConfidence !== 0;
+  }
+
+  activeFilterCount() {
+    return [
+      this.searchTerm.trim() !== '',
+      this.viewMode !== 'birds',
+      this.rarityFilter !== 'all',
+      this.minConfidence !== 0
+    ].filter(Boolean).length;
+  }
+
+  toggleFilters() {
+    this.filtersExpanded = !this.filtersExpanded;
+  }
+
+  clearFilters() {
+    this.searchTerm = '';
+    this.viewMode = 'birds';
+    this.rarityFilter = 'all';
+    this.minConfidence = 0;
+    this.filtersExpanded = false;
+    this.applyFilters();
+  }
+
+  trackDetection(index: number, detection: BirdDetection) {
+    return detection.File_Name + detection.Time + index;
+  }
+
+  summaryBirds(items: BirdSummaryItem[], limit: number = 4) {
+    return items.slice(0, limit);
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    document.removeEventListener('visibilitychange', this.visibilityHandler);
     if (this.wsSubscription) {
       this.wsSubscription.unsubscribe();
     }
   }
-
-  loadBirds() {
-    this.Data.getBirds().subscribe(birdsArray => {
-      this.birds = birdsArray.reduce((acc, bird) => {
-        acc[bird.Sci_Name] = bird;
-        return acc;
-      }, {});
-    });
-  }
-
 }

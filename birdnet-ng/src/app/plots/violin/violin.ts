@@ -29,7 +29,6 @@ export class Violin {
       this.todayBirds = todayBirds;
       this.createPlotData();
       this.initialisePlot();
-      console.log(this.todayBirds)
     });
   }
 
@@ -39,7 +38,6 @@ export class Violin {
 
   createPlotData() {
     const uniqueBirds = [...new Set(this.todayBirds.map(bird => bird.Com_Name))];
-    console.log('Unique Birds', uniqueBirds)
 
     let birdsHourly: { [key: string]: number[] }  = {}
     let birdsCounts: { [key: string]: number }  = {}

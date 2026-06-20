@@ -1,9 +1,13 @@
-<div class="bird-grid-card" (click)="goToBirdDetail()">
+<a class="bird-grid-card" [routerLink]="['/species-detail', bird.Sci_Name]">
   <div class="card-content">
     <div class="card-header">
       <h3 class="bird-common-name">{{ bird.Com_Name }}</h3>
       <p class="bird-sci-name"><em>{{ bird.Sci_Name }}</em></p>
     </div>
+
+    @if (bird.hasRecentReturn && bird.returnGapDays) {
+      <div class="return-badge">Returned after {{ bird.returnGapDays }} days</div>
+    }
     
     <div class="card-details">
       @if (bird.rarity) {
@@ -20,10 +24,22 @@
         <span class="detail-label">Detections:</span>
         <span class="detail-value">{{ bird.numberDetections }}</span>
       </div>
+      @if (bird.firstHeard) {
+      <div class="detail-item">
+        <span class="detail-label">First heard:</span>
+        <span class="detail-value">{{ bird.firstHeard | date:'mediumDate' }}</span>
+      </div>
+      }
+      @if (bird.lastHeard) {
+      <div class="detail-item">
+        <span class="detail-label">Last heard:</span>
+        <span class="detail-value">{{ bird.lastHeard | date:'mediumDate' }}</span>
+      </div>
+      }
     </div>
   </div>
   
   <div class="card-image-container">
     <img [src]="bird.imageUrl" [alt]="bird.Com_Name" class="bird-image" />
   </div>
-</div>
+</a>

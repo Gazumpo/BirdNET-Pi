@@ -1,27 +1,30 @@
 @if (detection) {
-<div class="bird-card-horizontal" (click)="goToBirdDetail()" [class.new-background]="isNew" [class.normal-background]="!isNew">
+<article class="bird-card-horizontal" [class.new-background]="isNew" [class.normal-background]="!isNew">
     <div class="card-image-container-horizontal">
-        <img [src]="detection.imageUrl" [alt]="detection.Com_Name" class="bird-image">
+        <a class="card-media-link" [routerLink]="['/species-detail', detection.Sci_Name]" [attr.aria-label]="'Open details for ' + detection.Com_Name">
+            <img [src]="detection.imageUrl" [alt]="detection.Com_Name" class="bird-image">
+        </a>
     </div>
     <div class="card-content-horizontal">
         <div class="card-info-grid">
-            <h3 class="bird-name">{{ detection.Com_Name }}</h3>
-            <span class="detection-time">{{ detection.Time }}</span>
-            <img [src]="detection.timeTypeIcon" class="time-type-icon">
+            <h3 class="bird-name">
+                <a [routerLink]="['/species-detail', detection.Sci_Name]">{{ detection.Com_Name }}</a>
+            </h3>
+            <span class="detection-time">{{ detection.Date }} {{ detection.Time }}</span>
+            <img [src]="detection.timeTypeIcon" class="time-type-icon" [alt]="detection.timeType || ''">
         </div>
         
-        <div class="card-info-grid">
+        <div class="meta-badges">
             @if (bird.rarity) {
-            <div class="info-item">
-                <span class="info-value rarity-{{ bird.rarity | spaceToUnderscore }}">{{bird.rarity}}</span>
-            </div>
+              <span class="info-value info-badge rarity-{{ bird.rarity | spaceToUnderscore }}">{{bird.rarity}}</span>
             }
-            <div class="info-item">
-                <span class="info-value">{{ detection.Confidence | percent: '1.0-0' }}</span>
-            </div>
+            <span class="info-value info-badge">{{ detection.Confidence | percent: '1.0-0' }} confidence</span>
+            @if (detection.timeType) {
+              <span class="info-value info-badge">{{ detection.timeType }}</span>
+            }
         </div>
         
         <audio controls [src]="detection.birdsongUrl" class="birdsong-audio" (click)="stopPropagation($event)"></audio>
     </div>
-</div>
+</article>
 }

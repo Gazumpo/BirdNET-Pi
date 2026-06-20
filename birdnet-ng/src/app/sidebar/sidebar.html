@@ -1,10 +1,10 @@
     <nav [class.sidebar-open]="isSidebarOpen()" class="sidebar-nav">
       <ul class="sidebar-links">
-        <li><a routerLink="/detections" (click)="onLinkClick()">Detections</a></li>
-        <li><a routerLink="/daily" (click)="onLinkClick()">Daily</a></li>
-        <li><a routerLink="/weekly" (click)="onLinkClick()">Weekly</a></li>
-        <li><a routerLink="/alltime" (click)="onLinkClick()">All</a></li>
-        <li><a routerLink="/species" (click)="onLinkClick()">Species</a></li>
+        <li><a routerLink="/detections" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }" (click)="onLinkClick()">Detections</a></li>
+        <li><a routerLink="/daily" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }" (click)="onLinkClick()">Daily</a></li>
+        <li><a routerLink="/weekly" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }" (click)="onLinkClick()">Weekly</a></li>
+        <li><a routerLink="/alltime" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }" (click)="onLinkClick()">All</a></li>
+        <li><a routerLink="/species" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }" (click)="onLinkClick()">Species</a></li>
       </ul>
     </nav>
     <button (click)="toggleSidebar()" class="hamburger-menu">

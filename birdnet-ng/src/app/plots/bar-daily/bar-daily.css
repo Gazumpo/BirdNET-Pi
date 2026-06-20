@@ -1,9 +1,18 @@
-  .plot-canvas {
-    display: flex;
-    width: 100%;
+:host {
+  display: block;
+}
 
-    background-color: white;
-    height: 30%; /* Make the plot canvas fill the available height */
-    margin: 2px;
+.plot-canvas {
+  display: flex;
+  width: 100%;
+  min-height: 320px;
+  border: 1px solid #d7dee8;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
 
-  }
+.plot-skeleton {
+  min-height: 320px;
+}
