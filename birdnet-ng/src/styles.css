@@ -252,8 +252,26 @@ textarea {
   border-radius: 12px;
   font-size: 1rem;
   color: #334155;
+  text-align: center;
+  text-align-last: center;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   min-width: 0;
+}
+
+.date-input::-webkit-date-and-time-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding-top: 0.3rem;
+  text-align: center;
+}
+
+.date-input::-webkit-datetime-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0.3rem;
 }
 
 .date-input:focus {
@@ -530,7 +548,8 @@ textarea {
   }
 
   .date-picker-navigation {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
   }
 
   .date-picker-navigation form {
@@ -542,6 +561,8 @@ textarea {
   .today-button,
   .nav-button {
     width: 100%;
+    height: 34px;
+    min-height: 34px;
   }
 
   .bird-list {

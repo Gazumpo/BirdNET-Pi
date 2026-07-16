@@ -1,4 +1,53 @@
 .weekly-shell {
   display: grid;
   gap: 1rem;
+  min-width: 0;
+}
+
+.date-picker-container,
+.date-picker-navigation,
+.date-picker-navigation form {
+  min-width: 0;
+}
+
+.date-picker-container {
+  overflow: hidden;
+}
+
+.date-input {
+  max-width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .weekly-shell {
+    gap: 0.85rem;
+  }
+
+  .date-picker-container {
+    gap: 0.75rem;
+  }
+
+  .date-picker-navigation {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+
+  .date-picker-navigation form {
+    grid-column: 1 / -1;
+    order: -1;
+  }
+
+  .date-input {
+    height: 34px;
+    padding: 0 0.65rem;
+    font-size: 0.9rem;
+  }
+
+  .nav-button,
+  .today-button {
+    height: 34px;
+    min-width: 0;
+    padding: 0 0.5rem;
+  }
 }

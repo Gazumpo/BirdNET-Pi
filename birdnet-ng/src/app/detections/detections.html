@@ -162,7 +162,11 @@
     <div class="detections-list">
       @for (detect of filteredLatestDetections; track trackDetection($index, detect)) {
         @if (birds[detect.Sci_Name]) {
-          <app-detection-detail [detection]="detect" [bird]="birds[detect.Sci_Name]"></app-detection-detail>
+          <app-detection-detail
+            [attr.data-scroll-key]="detectionScrollKey(detect)"
+            [detection]="detect"
+            [bird]="birds[detect.Sci_Name]"
+          ></app-detection-detail>
         }
       }
     </div>

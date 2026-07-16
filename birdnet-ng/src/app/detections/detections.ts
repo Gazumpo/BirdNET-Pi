@@ -11,6 +11,15 @@ import { DetectionDetail } from '../bird-components/detection-detail/detection-d
 import { DetectionNotifications } from '../services/detection-notifications';
 import { Sunrise } from '../services/sunrise';
 import { stationToday } from '../utils/station-time';
+import { NavigationState } from '../services/navigation-state';
+
+interface DetectionsPageState {
+  viewMode: string;
+  rarityFilter: string;
+  minConfidence: number;
+  searchTerm: string;
+  filtersExpanded: boolean;
+}
 
 interface BirdSummaryItem {
   Sci_Name: string;
@@ -55,6 +64,7 @@ export class Detections implements OnInit, OnDestroy {
   private readonly maxReconnectAttempts = 5;
   private readonly reconnectDelay = 5000;
   private readonly numberDetectionsRequest = 150;
+  private readonly pageStateKey = 'detections';
   private readonly visibilityHandler = () => {
     if (document.visibilityState === 'visible') {
       this.reconnectWebSocket();
@@ -65,10 +75,20 @@ export class Detections implements OnInit, OnDestroy {
     private data: Data,
     private ws: Ws,
     private sunriseService: Sunrise,
-    private detectionNotifications: DetectionNotifications
+    private detectionNotifications: DetectionNotifications,
+    private navigationState: NavigationState
   ) {}
 
   ngOnInit(): void {
+    const restoredState = this.navigationState.restoredPageState<DetectionsPageState>(this.pageStateKey);
+    if (restoredState) {
+      this.viewMode = restoredState.viewMode;
+      this.rarityFilter = restoredState.rarityFilter;
+      this.minConfidence = restoredState.minConfidence;
+      this.searchTerm = restoredState.searchTerm;
+      this.filtersExpanded = restoredState.filtersExpanded;
+    }
+    this.navigationState.registerPageState(this.pageStateKey, () => this.currentPageState());
     this.initialiseData();
     this.ws.connectionStatus$
       .pipe(takeUntil(this.destroy$))
@@ -271,11 +291,28 @@ export class Detections implements OnInit, OnDestroy {
     return detection.File_Name + detection.Time + index;
   }
 
+  detectionScrollKey(detection: BirdDetection): string {
+    return this.viewMode === 'birds'
+      ? `species:${detection.Sci_Name}`
+      : `detection:${detection.File_Name}:${detection.Time}`;
+  }
+
+  private currentPageState(): DetectionsPageState {
+    return {
+      viewMode: this.viewMode,
+      rarityFilter: this.rarityFilter,
+      minConfidence: this.minConfidence,
+      searchTerm: this.searchTerm,
+      filtersExpanded: this.filtersExpanded
+    };
+  }
+
   summaryBirds(items: BirdSummaryItem[], limit: number = 4) {
     return items.slice(0, limit);
   }
 
   ngOnDestroy(): void {
+    this.navigationState.unregisterPageState(this.pageStateKey);
     this.destroy$.next();
     this.destroy$.complete();
     document.removeEventListener('visibilitychange', this.visibilityHandler);

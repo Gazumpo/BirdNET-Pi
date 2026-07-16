@@ -39,14 +39,14 @@
   }
 
   .date-input {
-    height: 46px;
+    height: 34px;
     padding: 0 0.65rem;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   .nav-button,
   .today-button {
-    height: 42px;
+    height: 34px;
     min-width: 0;
     padding: 0 0.5rem;
   }
